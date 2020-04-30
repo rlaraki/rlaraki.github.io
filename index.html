@@ -2,45 +2,18 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Interactive Coronavirus Map</title>
-		<script type="text/javascript" src="d3.js"></script>
+		<script type="text/javascript" src="d3.min.js"></script>
 		<style type="text/css">
 			/* No style rules here yet */
 		</style>
 	</head>
 	<body>
-		<script type="text/javascript">
-		d3.select("body").append("h1").text("Coronavirus Map");
-			//Width and height
-			var w = 500;
-			var h = 300;
+		<svg id="map-plot" viewBox="0 0 1000 550" width="1000" height="550">
+			<style>
+			</style>
+		</svg>
 
-			//Define map projection
-			var projection = d3.geoMercator()
-								   .translate([w/2, h/2])
-								   .scale([w * 0.16]);
-
-			//Define path generator
-			var path = d3.geoPath()
-							 .projection(projection);
-
-			//Create SVG element
-			var svg = d3.select("body")
-						.append("svg")
-						.attr("width", w)
-						.attr("height", h);
-			//Load in GeoJSON data
-			d3.json("oceans.json", function(json) {
-
-				//Bind data and create one path per GeoJSON feature
-				svg.selectAll("path")
-				   .data(json.features)
-				   .enter()
-				   .append("path")
-				   .attr("d", path)
-				   .style("fill", "steelblue");
-
-			});
-
-		</script>
+		<script src="lib/topojson.min.js"></script>
+		<script src="main.js"></script>
 	</body>
 </html>
