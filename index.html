@@ -1,23 +1,46 @@
-<!doctype html>
 <html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Interactive Coronavirus Map</title>
+		<script type="text/javascript" src="d3.js"></script>
+		<style type="text/css">
+			/* No style rules here yet */
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+		d3.select("body").append("h1").text("Coronavirus Map");
+			//Width and height
+			var w = 500;
+			var h = 300;
 
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			//Define map projection
+			var projection = d3.geoMercator()
+								   .translate([w/2, h/2])
+								   .scale([w * 0.16]);
 
-	<title>Coronavirus Intervactive Map</title>
-	<meta name="author" content="Kirell Benzi, Krzysztof Lis, Volodymyr Miz">
+			//Define path generator
+			var path = d3.geoPath()
+							 .projection(projection);
 
-	<link rel="stylesheet" href="style.css">
-</head>
-<body>
-	<script type="text/javascript">
-			d3.select("body").append("h1").text("Interactive Coronavirus Map");
-	</script>
+			//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+			//Load in GeoJSON data
+			d3.json("oceans.json", function(json) {
 
+				//Bind data and create one path per GeoJSON feature
+				svg.selectAll("path")
+				   .data(json.features)
+				   .enter()
+				   .append("path")
+				   .attr("d", path)
+				   .style("fill", "steelblue");
 
-<script src="lib/topojson.min.js"></script>
-<script src="main.js"></script>
-</body>
+			});
+
+		</script>
+	</body>
 </html>
