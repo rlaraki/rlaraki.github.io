@@ -47,10 +47,21 @@ body {
 	font-size: 1.1rem;
 }
 
-svg {
+.scaling-svg-container {
+	border: 1px
+	solid orange;
+	flex : 14;
+	position: relative;
+	height: 100%;
 	width: 100%;
-	height: auto;
-	text-align: center;
+}
+
+.scaling-svg {
+ position: absolute;
+ height: 100%;
+ width: 100%;
+ left: 0;
+ top: 0;
 }
 
 .flex-container {
@@ -71,4 +82,11 @@ svg {
   font-size: 20px;
 	margin-right: 5px;
 	margin-top: 9px;
+}
+
+.right_scroll_plot {
+	overflow: scroll;
+	flex: 1;
+	min-width: 200px;
+	height: 93%
 }
