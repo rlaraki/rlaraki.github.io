@@ -5,6 +5,7 @@
 		<style type="text/css">
 			/* No style rules here yet */
 		</style>
+		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
 	<body>
 	<div style = "
@@ -14,11 +15,15 @@
 		</div>
 		<div style = "border: 1px solid blue; flex: 15">
 			<div style = "border: 1px solid yellow; height : 100%; width: 70%  ;display: flex;flex-direction: column">
-				<div style = "border: 1px solid black; flex : 1;">
-					Buttons ici
+				<div style = "border: 1px solid black; flex : 0.5;text-align : center;">
+					<button class="button">Cases</button>
+					<button class="button">Deaths</button>
+					<button class="button">Recovered</button>
+					<button class="button">Compare</button>
+					<button class="button">Measures</button>
 			</div>
 			<div style = "border: 1px solid orange; flex : 3;">
-			<svg id="map-plot" viewBox="-400 -100 1000 510" width = 1000 height = 510>
+			<svg id="map-plot" viewBox="-410 -110 980 510" width = 980 height = 510 stroke ="black">
 
 			</svg>
 			</div>

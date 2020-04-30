@@ -11,7 +11,7 @@ class MapPlot {
 
 		//Define map projection
 		var projection = d3.geoMercator()
-								 .translate([this.svg_width/2 -500, this.svg_height/1.5 - 130])
+								 .translate([this.svg_width/2 , this.svg_height/1.5 -300])
 								 .scale([this.svg_width * 0.15]);
 
 		//Define path generator
