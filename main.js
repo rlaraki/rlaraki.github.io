@@ -1,8 +1,6 @@
 
 class MapPlot {
 
-
-
 	constructor(svg_element_id) {
 		this.svg = d3.select('#' + svg_element_id);
 
@@ -11,31 +9,36 @@ class MapPlot {
 		this.svg_width = svg_viewbox.width;
 		this.svg_height = svg_viewbox.height;
 
-		// D3 Projection
-		// similar to scales
-		const projection = d3.geoNaturalEarth1()
-			.rotate([0, 0])
-			.center([8.3, 46.8]) // WorldSpace: Latitude and longitude of center of switzerland
-			.scale(13000)
-			.translate([this.svg_width / 2, this.svg_height / 2]) // SVG space
-			.precision(.1);
+		//Define map projection
+		var projection = d3.geoMercator()
+								 .translate([this.svg_width/2, this.svg_height/2])
+								 .scale([this.svg_width * 0.16]);
 
-		// path generator to convert JSON to SVG paths
-		const path_generator = d3.geoPath()
-			.projection(projection);
+		//Define path generator
+		var path = d3.geoPath()
+						 .projection(projection);
 
-		const map_promise = d3.json("data/countries-50m.json").then((topojson_raw) => {
-			const canton_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
-			return canton_paths.features;
+		//this.map_container = this.svg.append('g');
+
+		const map_promise = d3.json("data/countries.json").then((topojson_raw) => {
+			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
+			return country_paths.features;
 		});
 
-		Promise.all([map_promise]).then((results)) => {
-			let map_data = results[0]
+		Promise.all([map_promise]).then((results) => {
+			let map_data = results[0];
+			this.svg.selectAll("path")
+ 				 .data(map_data)
+ 				 .enter()
+ 				 .append("path")
+ 				 .attr("d", path)
+ 				 .style("fill", "steelblue");
 
-			
-		}
+		});
+
 
 	}
+
 }
 
 
