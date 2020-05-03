@@ -11,12 +11,12 @@ class MapPlot {
 
 		//Define map projection
 		var projection = d3.geoMercator()
-								 .translate([this.svg_width/2, this.svg_height/2])
-								 .scale([this.svg_width * 0.15]);
+		.translate([this.svg_width/2, this.svg_height/2])
+		.scale([this.svg_width * 0.15]);
 
 		//Define path generator
 		var path = d3.geoPath()
-						 .projection(projection);
+		.projection(projection);
 
 		//this.map_container = this.svg.append('g');
 
@@ -27,12 +27,22 @@ class MapPlot {
 
 		Promise.all([map_promise]).then((results) => {
 			let map_data = results[0];
-			this.svg.selectAll("path")
+
+			this.map_container = this.svg.append('g');
+
+			this.map_container.selectAll("path")
  				 .data(map_data)
  				 .enter()
  				 .append("path")
  				 .attr("d", path)
  				 .style("fill", "steelblue");
+
+			this.svg.call(d3.zoom()
+			.extend([[0, 0], [this.svg_width, this.svg_height]])
+			.scaleExtent([1, 8])
+			.on('zoom', function () => {
+				this.map_container.attr('transform', d3.event.transform)
+			}));
 		});
 	}
 
