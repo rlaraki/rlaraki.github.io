@@ -18,7 +18,7 @@ class MapPlot {
 		var path = d3.geoPath()
 						 .projection(projection);
 
-		//this.map_container = this.svg.append('g');
+
 
 		const map_promise = d3.json("data/countries.json").then((topojson_raw) => {
 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
@@ -27,12 +27,24 @@ class MapPlot {
 
 		Promise.all([map_promise]).then((results) => {
 			let map_data = results[0];
-			this.svg.selectAll("path")
+			const map_container = this.svg.append("g");
+
+			map_container.selectAll("path")
  				 .data(map_data)
  				 .enter()
  				 .append("path")
  				 .attr("d", path)
  				 .style("fill", "steelblue");
+
+
+	 		const zoom = d3.zoom()
+	 					       .scaleExtent([1, 8])
+	 					       .on('zoom', function() {
+	 									 map_container.selectAll('path')
+	 										 .attr('transform', d3.event.transform);
+
+	 								 });
+			this.svg.call(zoom);
 		});
 	}
 
@@ -49,6 +61,6 @@ function whenDocumentLoaded(action) {
 }
 
 whenDocumentLoaded(() => {
-	plot_object = new MapPlot('map-plot');
+	plot_object = new MapPlot('map-plot8');
 	// plot object is global, you can inspect it in the dev-console
 });
