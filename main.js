@@ -8,17 +8,21 @@ class MapPlot {
 		const svg_viewbox = this.svg.node().viewBox.animVal;
 		this.svg_width = svg_viewbox.width;
 		this.svg_height = svg_viewbox.height;
+		const width = this.svg_width
+		const height = this.svg_height
 
 		//Define map projection
 		var projection = d3.geoMercator()
-								 .translate([this.svg_width/2, this.svg_height/2])
-								 .scale([this.svg_width * 0.15]);
+								 .translate([width/2, height/2])
+								 .scale([width * 0.15]);
 
 		//Define path generator
 		var path = d3.geoPath()
 						 .projection(projection);
 
 
+
+		//this.map_container = this.svg.append('g');
 
 		const map_promise = d3.json("data/countries.json").then((topojson_raw) => {
 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
@@ -40,9 +44,9 @@ class MapPlot {
 	 		const zoom = d3.zoom()
 	 					       .scaleExtent([1, 8])
 	 					       .on('zoom', function() {
-	 									 map_container.selectAll('path')
-	 										 .attr('transform', d3.event.transform);
-
+							 			 	d3.event.transform.x = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
+						   				d3.event.transform.y = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
+											map_container.selectAll('path').attr("transform", d3.event.transform);
 	 								 });
 			this.svg.call(zoom);
 		});
