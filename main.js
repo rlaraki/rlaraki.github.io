@@ -29,6 +29,7 @@ class MapPlot {
 			let map_data = results[0];
 
 			this.map_container = this.svg.append('g');
+			this.zoom_container = this.svg.append('g');
 
 			this.map_container.selectAll("path")
  				 .data(map_data)
@@ -37,12 +38,15 @@ class MapPlot {
  				 .attr("d", path)
  				 .style("fill", "steelblue");
 
-			this.svg.call(d3.zoom()
-			.extend([[0, 0], [this.svg_width, this.svg_height]])
-			.scaleExtent([1, 8])
-			.on('zoom', function () => {
-				this.map_container.attr('transform', d3.event.transform)
+
+
+		 this.svg.call(d3.zoom()
+		 .extend([[0, 0], [this.svg_width, this.svg_height]])
+		 .scaleExtent([1, 8])
+		 .on('zoom', function () {
+				this.zoom_container.attr('transform', d3.event.transform)
 			}));
+
 		});
 	}
 
@@ -59,6 +63,6 @@ function whenDocumentLoaded(action) {
 }
 
 whenDocumentLoaded(() => {
-	plot_object = new MapPlot('map-plot');
+	plot_object = new MapPlot('map-plot1');
 	// plot object is global, you can inspect it in the dev-console
 });
