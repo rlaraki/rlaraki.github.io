@@ -92,17 +92,30 @@ body {
 
 .scaling-svg-container {
 	flex : 14;
+	flex-shrink: 0;
 	position: relative;
-	height: 100%;
-	width: 100%;
+
+}
+.svg-container {
+		flex : 14;
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-content {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .scaling-svg {
+flex : 14;
  position: absolute;
- height: 100%;
- width: 100%;
- left: 0;
- top: 0;
+
 }
 
 .flex-container {
@@ -113,7 +126,7 @@ body {
 
 .button {
 	border:none;
-	padding:6px 0 6px 0;
+	padding:2% 0 2% 0;
 	border-radius:8px;
 	background:steelblue;
 	font:bold 13px Sans-serif;
