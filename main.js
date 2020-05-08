@@ -2,7 +2,20 @@
 class MapPlot {
 
 	constructor(svg_element_id) {
-		this.svg = d3.select('#' + svg_element_id);
+
+		var map_container_svg = document.getElementById('map_container_svg');
+		const height = map_container_svg.offsetHeight;
+		const width = map_container_svg.offsetWidth;
+
+		console.log('height: ', height);
+		console.log('width: ', width);
+
+		this.svg = d3.select('div#map_container_svg')
+			.append('svg')
+			.attr('preserveAspectRatio', 'xMinYMin meet')
+			.attr('viewBox', '0 0 ' + width.toString(10) + ' ' + height.toString(10))
+			.classed('svg-content', true);
+
 
 		// may be useful for calculating scales
 		const svg_viewbox = this.svg.node().viewBox.animVal;
