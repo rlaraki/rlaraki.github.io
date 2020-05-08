@@ -11,6 +11,7 @@ class MapPlot {
 		const width = this.svg_width
 		const height = this.svg_height
 
+
 		//Define map projection
 		var projection = d3.geoMercator()
 								 .translate([width/2, height/2])
@@ -22,24 +23,37 @@ class MapPlot {
 
 
 
-		//this.map_container = this.svg.append('g');
-
 		const map_promise = d3.json("data/countries.json").then((topojson_raw) => {
 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
 			return country_paths.features;
 		});
 
-		Promise.all([map_promise]).then((results) => {
-			let map_data = results[0];
+		const data_promise = this.getData();
+
+
+		Promise.all([map_promise, data_promise]).then((results) => {
+			let map_creation = results[0];
+			let data = results[1];
+
+			map_creation.forEach(country => {
+				country.properties.value = data[country.properties.name];
+			});
+
+
 			const map_container = this.svg.append("g");
 
-			map_container.selectAll("path")
- 				 .data(map_data)
- 				 .enter()
- 				 .append("path")
- 				 .attr("d", path)
- 				 .style("fill", "steelblue");
+			var slider = d3.select(".slider")
+				.append("input")
+				.attr("type", "range")
+				.attr("min", 1996)
+				.attr("max", 2012)
+				.attr("step", 1)
+				.on("input", function() {
+					var year = this.value;
+					update(year);
+				});
 
+			this.drawData(map_container, map_creation, path);
 
 	 		const zoom = d3.zoom()
 	 					       .scaleExtent([1, 8])
@@ -54,6 +68,44 @@ class MapPlot {
 
 }
 
+class MapMeasures extends MapPlot {
+	constructor(svg_element_id) {
+		super(svg_element_id);
+	}
+
+	getData() {
+		const gov_measures = d3.csv("data_website/gov_si.csv").then((data) => {
+			let country_to_si = {};
+
+			//var parseYearMonthDay = d3.time.format("%Y/%m/%d").parse;
+
+			data.forEach((row) => {
+				country_to_si[row.CountryName] = parseFloat(row.StringencyIndexForDisplay);
+			});
+			return country_to_si;
+		});
+		return gov_measures;
+	}
+
+	drawData(map_container, map_creation, path) {
+
+		const color_scale = d3.scaleLinear()
+			.range(["hsl(62,100%,90%)", "hsl(228,30%,20%)"])
+			.interpolate(d3.interpolateHcl);
+
+		color_scale.domain([0, 100]);
+
+		map_container.selectAll("path")
+		 .data(map_creation)
+		 .enter()
+		 .append("path")
+		 .attr("d", path)
+		 .style("fill", (d) => color_scale(d.properties.value));
+	}
+
+
+}
+
 
 function whenDocumentLoaded(action) {
 	if (document.readyState === "loading") {
@@ -65,6 +117,8 @@ function whenDocumentLoaded(action) {
 }
 
 whenDocumentLoaded(() => {
-	plot_object = new MapPlot('map-plot8');
+	plot_map = new MapMeasures('map-plot8');
+
+
 	// plot object is global, you can inspect it in the dev-console
 });
