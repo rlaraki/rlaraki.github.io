@@ -1,14 +1,11 @@
 
 class MapPlot {
 
-	constructor(svg_element_id) {
+	constructor() {
 
 		var map_container_svg = document.getElementById('map_container_svg');
 		const height = map_container_svg.offsetHeight;
 		const width = map_container_svg.offsetWidth;
-
-		console.log('height: ', height);
-		console.log('width: ', width);
 
 		this.svg = d3.select('div#map_container_svg')
 			.append('svg')
@@ -30,7 +27,6 @@ class MapPlot {
 		//Define path generator
 		var path = d3.geoPath()
 						 .projection(projection);
-
 
 
 		const map_promise = d3.json("data/countries.json").then((topojson_raw) => {
@@ -63,7 +59,6 @@ class MapPlot {
 
 }
 
-
 function whenDocumentLoaded(action) {
 	if (document.readyState === "loading") {
 		document.addEventListener("DOMContentLoaded", action);
@@ -74,6 +69,11 @@ function whenDocumentLoaded(action) {
 }
 
 whenDocumentLoaded(() => {
-	plot_object = new MapPlot('map-plot8');
+	plot_object = new MapPlot();
 	// plot object is global, you can inspect it in the dev-console
 });
+
+
+window.onresize = function() {
+	location.reload()
+}
