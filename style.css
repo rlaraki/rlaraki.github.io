@@ -58,9 +58,9 @@ body {
 }
 
 .title_container {
-	height: 100%;
 	flex: 1;
 	text-align: center;
+	padding-top: 4px;
 	font: sans-serif;
 	font-weight: normal; 
 	font-size: 4em; 
@@ -92,30 +92,17 @@ body {
 
 .scaling-svg-container {
 	flex : 14;
-	flex-shrink: 0;
 	position: relative;
-
-}
-.svg-container {
-		flex : 14;
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    padding-bottom: 100%;
-    vertical-align: top;
-    overflow: hidden;
-}
-.svg-content {
-    display: inline-block;
-    position: absolute;
-    top: 0;
-    left: 0;
+	height: 100%;
+	width: 100%;
 }
 
 .scaling-svg {
-flex : 14;
  position: absolute;
-
+ height: 100%;
+ width: 100%;
+ left: 0;
+ top: 0;
 }
 
 .flex-container {
@@ -126,7 +113,7 @@ flex : 14;
 
 .button {
 	border:none;
-	padding:2% 0 2% 0;
+	padding:6px 0 6px 0;
 	border-radius:8px;
 	background:steelblue;
 	font:bold 13px Sans-serif;
@@ -143,6 +130,8 @@ flex : 14;
 	solid grey;
 	overflow: auto;
 	flex: 1;
+	min-width: 200px;
+	height: 100%;
 	max-height: 91vh;
 }
 
