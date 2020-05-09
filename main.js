@@ -34,7 +34,7 @@ class MapPlot {
 		Promise.all([map_promise, data_promise]).then((results) => {
 			let map_creation = results[0];
 			let data = results[1];
-
+			console.log('promise ', data);
 			map_creation.forEach(country => {
 				country.properties.value = data[country.properties.name];
 			});
@@ -42,18 +42,13 @@ class MapPlot {
 
 			const map_container = this.svg.append("g");
 
-			var slider = d3.select(".slider")
-				.append("input")
-				.attr("type", "range")
-				.attr("min", 1996)
-				.attr("max", 2012)
-				.attr("step", 1)
-				.on("input", function() {
-					var year = this.value;
-					update(year);
-				});
+			var countryShapes = map_container.selectAll("path")
+				 .data(map_creation)
+				 .enter()
+				 .append("path")
+				 .attr("d", path)
 
-			this.drawData(map_container, map_creation, path);
+			this.drawData(countryShapes);
 
 	 		const zoom = d3.zoom()
 	 					       .scaleExtent([1, 8])
@@ -87,7 +82,7 @@ class MapMeasures extends MapPlot {
 		return gov_measures;
 	}
 
-	drawData(map_container, map_creation, path) {
+	drawData(countryShapes) {
 
 		const color_scale = d3.scaleLinear()
 			.range(["hsl(62,100%,90%)", "hsl(228,30%,20%)"])
@@ -95,12 +90,7 @@ class MapMeasures extends MapPlot {
 
 		color_scale.domain([0, 100]);
 
-		map_container.selectAll("path")
-		 .data(map_creation)
-		 .enter()
-		 .append("path")
-		 .attr("d", path)
-		 .style("fill", (d) => color_scale(d.properties.value));
+		 countryShapes.style("fill", (d) => color_scale(d.properties.value));
 	}
 
 
