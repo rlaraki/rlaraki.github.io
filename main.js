@@ -1,6 +1,7 @@
 
 class MapPlot {
 
+
 	constructor(svg_element_id) {
 		this.svg = d3.select('#' + svg_element_id);
 
@@ -33,12 +34,13 @@ class MapPlot {
 
 		Promise.all([map_promise, data_promise]).then((results) => {
 			let map_creation = results[0];
-			let data = results[1];
-			console.log('promise ', data);
-			map_creation.forEach(country => {
-				country.properties.value = data[country.properties.name];
-			});
+			let data = results[1][0];
+			let dates = results[1][1];
+			console.log(dates);
 
+			map_creation.forEach(country => {
+				country.properties.date = data[country.properties.name];
+			});
 
 			const map_container = this.svg.append("g");
 
@@ -46,9 +48,25 @@ class MapPlot {
 				 .data(map_creation)
 				 .enter()
 				 .append("path")
-				 .attr("d", path)
+				 .attr("d", path);
 
-			this.drawData(countryShapes);
+			 let current_plot = this;
+
+			 var slider = d3.select(".slider")
+	 			.append("input")
+	 			.attr("type", "range")
+	 			.attr("min", 0)
+	 			.attr("max", dates.length - 1)
+				.attr("step", 1)
+	 			.on("input", function() {
+	 				var date = dates[this.value];
+					slider.property("value", this.value);
+	 				current_plot.drawData(countryShapes, date, slider);
+	 			});
+
+			slider.property("value", 0);
+			this.drawData(countryShapes, dates[0], slider);
+
 
 	 		const zoom = d3.zoom()
 	 					       .scaleExtent([1, 8])
@@ -63,6 +81,7 @@ class MapPlot {
 
 }
 
+
 class MapMeasures extends MapPlot {
 	constructor(svg_element_id) {
 		super(svg_element_id);
@@ -70,19 +89,26 @@ class MapMeasures extends MapPlot {
 
 	getData() {
 		const gov_measures = d3.csv("data_website/gov_si.csv").then((data) => {
-			let country_to_si = {};
-
-			//var parseYearMonthDay = d3.time.format("%Y/%m/%d").parse;
+			let country_to_year_to_data = {};
+			let dates = {};
 
 			data.forEach((row) => {
-				country_to_si[row.CountryName] = parseFloat(row.StringencyIndexForDisplay);
+				if (country_to_year_to_data[row.CountryName] == undefined) {
+					country_to_year_to_data[row.CountryName] = {}
+				}
+				else {
+					country_to_year_to_data[row.CountryName][row.Date] = parseFloat(row.StringencyIndexForDisplay);
+				}
+				dates[row.Date] = row.Date;
 			});
-			return country_to_si;
+			dates = Object.values(dates);
+			dates.sort(function(a,b) { return a - b; });
+			return [country_to_year_to_data, dates];
 		});
 		return gov_measures;
 	}
 
-	drawData(countryShapes) {
+	drawData(countryShapes, date, slider) {
 
 		const color_scale = d3.scaleLinear()
 			.range(["hsl(62,100%,90%)", "hsl(228,30%,20%)"])
@@ -90,10 +116,15 @@ class MapMeasures extends MapPlot {
 
 		color_scale.domain([0, 100]);
 
-		 countryShapes.style("fill", (d) => color_scale(d.properties.value));
+		countryShapes.style("fill", function(d) {
+			if (d.properties.date != undefined) {
+				return color_scale(d.properties.date[date]);
+			}
+			else {
+				return color_scale(d.properties.date);
+			}
+		});
 	}
-
-
 }
 
 
