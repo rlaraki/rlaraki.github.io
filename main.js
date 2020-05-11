@@ -13,8 +13,6 @@ class MapPlot {
 				.attr('viewBox', '0 0 ' + width.toString(10) + ' ' + height.toString(10)) 
 				.classed('scaling-svg', true);
 
-
-
 		//Define map projection
 		var projection = d3.geoMercator()
 								 .translate([width/2, height/2])
@@ -24,74 +22,17 @@ class MapPlot {
 		var path = d3.geoPath()
 						 .projection(projection);
 
-
-
 		this.map_promise = d3.json("data/countries.json").then((topojson_raw) => {
-			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
-			return country_paths.features;
-		});
+	 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
+	 			return country_paths.features;
+	 		});
 
-		const data_promise = this.getData();
+		this.data_promise = this.getData();
 
-
-		Promise.all([this.map_promise, data_promise]).then((results) => {
-			let map_creation = results[0];
-			let data = results[1][0];
-			let dates = results[1][1];
-			console.log(dates);
-
-			map_creation.forEach(country => {
-				country.properties.date = data[country.properties.name];
-			});
-
-			const map_container = this.svg.append("g")
-				 .attr('id', 'svg g');
-
-			var countryShapes = map_container.selectAll("path")
-				 .data(map_creation)
-				 .enter()
-				 .append("path")
-				 .attr("d", path);
-
-			 let current_plot = this;
-
-			 var slider = d3.select(".slider")
-	 			.append("input")
-	 			.attr("type", "range")
-	 			.attr("min", 0)
-	 			.attr("max", dates.length - 1)
-				.attr("step", 1)
-	 			.on("input", function() {
-	 				var date = dates[this.value];
-					slider.property("value", this.value);
-					d3.select(".slider").select('g').text(date);
-	 				current_plot.drawData(countryShapes, date, slider);
-	 			});
-
-			slider.property("value", 0);
-			this.drawData(countryShapes, dates[0], slider);
-
-
-	 		const zoom = d3.zoom()
-	 					       .scaleExtent([1, 8])
-	 					       .on('zoom', function() {
-							 			 	d3.event.transform.x = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
-						   				d3.event.transform.y = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
-											map_container.selectAll('path').attr("transform", d3.event.transform);
-	 								 });
-			this.svg.call(zoom);
-			this.makeLegend(this.svg, [width, 0], [width*0.5, height*0.05]);
-
-			const range01_to_color = d3.scaleLinear()
-				.domain([0, 1])
-				.range(this.color_scale.range())
-				.interpolate(this.color_scale.interpolate());
-
-		});
 	}
 
 
-	redraw(){
+	draw(){
 
 		var map_container_svg = document.getElementById('map_container_svg')
 		const svg_viewbox = this.svg.node().viewBox.animVal;
@@ -110,25 +51,56 @@ class MapPlot {
 		var g = document.getElementById('svg g');
 		if (g) g.remove();
 
+		var s = document.getElementById('slider_id');
+		if (s) s.remove();
+
+		var c = document.getElementById('colorbar');
+		if (c) c.remove();
+
 		this.svg
 			.attr('preserveAspectRatio', 'xMinYMin meet')
 			.attr('viewBox', '0 0 ' + map_container_svg.offsetWidth.toString(10) + ' ' + map_container_svg.offsetHeight.toString(10))
 			.classed('scaling-svg', true);
 
-				//Bind data and create one path per GeoJSON feature
 
-
-		Promise.all([this.map_promise]).then((results) => {
+		Promise.all([this.map_promise, this.data_promise]).then((results) => {
 			let map_data = results[0];
+			let data = results[1][0];
+			let dates = results[1][1];
+
+			map_data.forEach(country => {
+				country.properties.date = data[country.properties.name];
+			});
+
 			const map_container = this.svg.append("g").attr('id', 'svg g');
 
-			map_container.selectAll("path")
-					 .data(map_data)
-					 .enter()
-					 .append("path")
-					 .attr("d", path)
-					 .style("fill", "steelblue");
-				 const zoom = d3.zoom()
+
+			var countryShapes = map_container.selectAll("path")
+				 .data(map_data)
+				 .enter()
+				 .append("path")
+				 .attr("d", path);
+
+			 let current_plot = this;
+
+			 var slider = d3.select(".slider")
+	 			.append("input")
+				.attr("id", "slider_id")
+	 			.attr("type", "range")
+	 			.attr("min", 0)
+	 			.attr("max", dates.length - 1)
+				.attr("step", 1)
+	 			.on("input", function() {
+	 				var date = dates[this.value];
+					slider.property("value", this.value);
+					d3.select(".slider").select('g').text(date);
+	 				current_plot.drawData(countryShapes, date, slider);
+	 			});
+
+			slider.property("value", 0);
+			this.drawData(countryShapes, dates[0], slider);
+
+			const zoom = d3.zoom()
 	 	 					       .scaleExtent([1, 8])
 	 	 					       .on('zoom', function() {
 	 										 d3.event.transform.x = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
@@ -137,6 +109,7 @@ class MapPlot {
 
 	 	 								 });
 	 			this.svg.call(zoom);
+				this.makeLegend(map_container, [20, 20], [width * 0.5, height * 0.05]);
 		});
 	}
 
@@ -254,10 +227,10 @@ function whenDocumentLoaded(action) {
 
 whenDocumentLoaded(() => {
 	plot_object = new MapMeasures('map-plot8');
-
+	plot_object.draw();
 
 	window.onresize = function() {
 		console.log("resize")
-		plot_object.redraw();
+		plot_object.draw();
 	};
 });
