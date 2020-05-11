@@ -3,14 +3,16 @@ class MapPlot {
 
 
 	constructor(svg_element_id) {
-		this.svg = d3.select('#' + svg_element_id);
+		var map_container_svg = document.getElementById('map_container_svg'); 
+		const height = map_container_svg.offsetHeight; 
+		const width = map_container_svg.offsetWidth;  
+		var info;  
+		this.svg = d3.select('div#map_container_svg')
+				.append('svg') 
+				.attr('preserveAspectRatio', 'xMinYMin meet') 
+				.attr('viewBox', '0 0 ' + width.toString(10) + ' ' + height.toString(10)) 
+				.classed('scaling-svg', true);
 
-		// may be useful for calculating scales
-		const svg_viewbox = this.svg.node().viewBox.animVal;
-		this.svg_width = svg_viewbox.width;
-		this.svg_height = svg_viewbox.height;
-		const width = this.svg_width
-		const height = this.svg_height
 
 
 		//Define map projection
@@ -24,7 +26,7 @@ class MapPlot {
 
 
 
-		const map_promise = d3.json("data/countries.json").then((topojson_raw) => {
+		this.map_promise = d3.json("data/countries.json").then((topojson_raw) => {
 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
 			return country_paths.features;
 		});
@@ -32,7 +34,7 @@ class MapPlot {
 		const data_promise = this.getData();
 
 
-		Promise.all([map_promise, data_promise]).then((results) => {
+		Promise.all([this.map_promise, data_promise]).then((results) => {
 			let map_creation = results[0];
 			let data = results[1][0];
 			let dates = results[1][1];
@@ -42,7 +44,8 @@ class MapPlot {
 				country.properties.date = data[country.properties.name];
 			});
 
-			const map_container = this.svg.append("g");
+			const map_container = this.svg.append("g")
+				 .attr('id', 'svg g');
 
 			var countryShapes = map_container.selectAll("path")
 				 .data(map_creation)
@@ -61,6 +64,7 @@ class MapPlot {
 	 			.on("input", function() {
 	 				var date = dates[this.value];
 					slider.property("value", this.value);
+					d3.select(".slider").select('g').text(date);
 	 				current_plot.drawData(countryShapes, date, slider);
 	 			});
 
@@ -76,6 +80,63 @@ class MapPlot {
 											map_container.selectAll('path').attr("transform", d3.event.transform);
 	 								 });
 			this.svg.call(zoom);
+			this.makeLegend(this.svg, [width, 0], [width*0.5, height*0.05]);
+
+			const range01_to_color = d3.scaleLinear()
+				.domain([0, 1])
+				.range(this.color_scale.range())
+				.interpolate(this.color_scale.interpolate());
+
+		});
+	}
+
+
+	redraw(){
+
+		var map_container_svg = document.getElementById('map_container_svg')
+		const svg_viewbox = this.svg.node().viewBox.animVal;
+
+		const width = svg_viewbox.width;
+		const height= svg_viewbox.height;
+
+		var projection = d3.geoMercator()
+								 .translate([width/2, width/2])
+								 .scale([width * 0.15]);
+
+		// use projection fn with geoPath fn
+		var path = d3.geoPath()
+						 .projection(projection);
+
+		var g = document.getElementById('svg g');
+		if (g) g.remove();
+
+		this.svg
+			.attr('preserveAspectRatio', 'xMinYMin meet')
+			.attr('viewBox', '0 0 ' + map_container_svg.offsetWidth.toString(10) + ' ' + map_container_svg.offsetHeight.toString(10))
+			.classed('scaling-svg', true);
+
+				//Bind data and create one path per GeoJSON feature
+
+
+		Promise.all([this.map_promise]).then((results) => {
+			let map_data = results[0];
+			const map_container = this.svg.append("g").attr('id', 'svg g');
+
+			map_container.selectAll("path")
+					 .data(map_data)
+					 .enter()
+					 .append("path")
+					 .attr("d", path)
+					 .style("fill", "steelblue");
+				 const zoom = d3.zoom()
+	 	 					       .scaleExtent([1, 8])
+	 	 					       .on('zoom', function() {
+	 										 d3.event.transform.x = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
+	 						   				d3.event.transform.y = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
+	 											map_container.selectAll('path').attr("transform", d3.event.transform);
+
+	 	 								 });
+	 			this.svg.call(zoom);
 		});
 	}
 
@@ -85,6 +146,9 @@ class MapPlot {
 class MapMeasures extends MapPlot {
 	constructor(svg_element_id) {
 		super(svg_element_id);
+		this.color_scale = d3.scaleLinear()
+			.range(["hsl(62,100%,90%)", "hsl(228,30%,20%)"])
+			.interpolate(d3.interpolateHcl);
 	}
 
 	getData() {
@@ -110,20 +174,71 @@ class MapMeasures extends MapPlot {
 
 	drawData(countryShapes, date, slider) {
 
-		const color_scale = d3.scaleLinear()
-			.range(["hsl(62,100%,90%)", "hsl(228,30%,20%)"])
-			.interpolate(d3.interpolateHcl);
-
-		color_scale.domain([0, 100]);
-
+		this.color_scale.domain([0, 100]);
+		const current_class = this;
+		d3.select(".slider").select('g').text(date);
 		countryShapes.style("fill", function(d) {
 			if (d.properties.date != undefined) {
-				return color_scale(d.properties.date[date]);
+				return current_class.color_scale(d.properties.date[date]);
 			}
 			else {
-				return color_scale(d.properties.date);
+				return current_class.color_scale(d.properties.date);
 			}
 		});
+	}
+
+	makeLegend(svg, top_left, colorbar_size, scaleClass=d3.scaleLinear) {
+
+		const value_to_svg = scaleClass()
+			.domain(this.color_scale.domain())
+			.range([0, colorbar_size[0]]);
+
+		const range01_to_color = d3.scaleLinear()
+			.domain([0, 1])
+			.range(this.color_scale.range())
+			.interpolate(this.color_scale.interpolate());
+
+		// Axis numbers
+		const colorbar_axis = d3.axisTop(value_to_svg)
+			.tickFormat(d3.format(".0f"))
+
+		const colorbar_g = svg
+			.attr("id", "colorbar")
+			.attr("transform", "translate(" + top_left[0] + ', ' + top_left[1] + ")")
+			.call(colorbar_axis);
+
+
+		// Create the gradient
+		function range01(steps) {
+			return Array.from(Array(steps), (elem, index) => index / (steps-1));
+		}
+
+		const svg_defs = svg.append("defs");
+
+		const gradient = svg_defs.append('linearGradient')
+			.attr('id', 'colorbar-gradient')
+			.attr('x1', '0%') // left
+			.attr('y1', '0%')
+			.attr('x2', '100%') // to right
+			.attr('y2', '0%')
+			.attr('spreadMethod', 'pad');
+
+		gradient.selectAll('stop')
+			.data(range01(10))
+			.enter()
+			.append('stop')
+				.attr('offset', d => Math.round(100*d) + '%')
+				.attr('stop-color', d => range01_to_color(d))
+				.attr('stop-opacity', 1);
+
+		// create the colorful rect
+		colorbar_g.append('rect')
+			.attr('id', 'colorbar-area')
+			.attr('width', colorbar_size[0])
+			.attr('height', colorbar_size[1])
+			.style('fill', 'url(#colorbar-gradient)')
+			.style('stroke', 'black')
+			.style('stroke-width', '1px')
 	}
 }
 
@@ -138,8 +253,11 @@ function whenDocumentLoaded(action) {
 }
 
 whenDocumentLoaded(() => {
-	plot_map = new MapMeasures('map-plot8');
+	plot_object = new MapMeasures('map-plot8');
 
 
-	// plot object is global, you can inspect it in the dev-console
+	window.onresize = function() {
+		console.log("resize")
+		plot_object.redraw();
+	};
 });
