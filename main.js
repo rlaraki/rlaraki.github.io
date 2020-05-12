@@ -113,8 +113,7 @@ class MapPlot {
 		});
 	}
 
-	  redraw(){
-
+  redraw(){
 
 		var map_container_svg = document.getElementById('map_container_svg')
 		const svg_viewbox = this.svg.node().viewBox.animVal;
@@ -141,32 +140,27 @@ class MapPlot {
 				//Bind data and create one path per GeoJSON feature
 
 
-				Promise.all([this.map_promise]).then((results) => {
-					let map_data = results[0];
-					const map_container = this.svg.append("g").attr('id', 'svg g');
+		Promise.all([this.map_promise]).then((results) => {
+			let map_data = results[0];
+			const map_container = this.svg.append("g").attr('id', 'svg g');
 
-					map_container.selectAll("path")
-		 				 .data(map_data)
-		 				 .enter()
-		 				 .append("path")
-		 				 .attr("d", path)
-		 				 .style("fill", "steelblue");
-						 const zoom = d3.zoom()
-			 	 					       .scaleExtent([1, 8])
-			 	 					       .on('zoom', function() {
-			 										 d3.event.transform.x = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
-			 						   				d3.event.transform.y = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
-			 											map_container.selectAll('path').attr("transform", d3.event.transform);
+			map_container.selectAll("path")
+					 .data(map_data)
+					 .enter()
+					 .append("path")
+					 .attr("d", path)
+					 .style("fill", "steelblue");
+				 const zoom = d3.zoom()
+	 	 					       .scaleExtent([1, 8])
+	 	 					       .on('zoom', function() {
+	 										 d3.event.transform.x = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
+	 						   				d3.event.transform.y = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
+	 											map_container.selectAll('path').attr("transform", d3.event.transform);
 
-			 	 								 });
-			 			this.svg.call(zoom);
-
- });
+	 	 								 });
+	 			this.svg.call(zoom);
+		});
 	}
-
-
-
-
 }
 
 
@@ -280,11 +274,12 @@ function whenDocumentLoaded(action) {
 }
 
 whenDocumentLoaded(() => {
-	plot_object = new MapMeasures('map-plot8');
-	plot_object.draw();
+	plot_object = new MapPlot('map-plot8');
 
 	window.onresize = function() {
 		console.log("resize")
 		plot_object.draw();
 	};
 });
+
+	// plot object is global, you can inspect it in the dev-console
