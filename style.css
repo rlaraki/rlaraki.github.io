@@ -26,6 +26,13 @@ html, body, figure {
 	border: 0;
 }
 
+
+p {
+  font-size: 1.3em;
+  font-weight: 700;
+	color: #000;
+}
+
 /* Default font and size */
 body {
 
@@ -90,12 +97,20 @@ body {
 	text-align: center
 }
 
+.slider {
+	flex : 1;
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
+
 .scaling-svg-container {
 	flex : 14;
 	position: relative;
 	height: 100%;
 	width: 100%;
 }
+
 
 .scaling-svg {
  position: absolute;

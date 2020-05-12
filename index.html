@@ -24,14 +24,17 @@
 		<div class='data_container'>
 			<div class='map_container'>
 				<div class='map_button_container'>
-					<button class='button'>Cases</button>
-					<button class='button'>Deaths</button>
-					<button class='button'>Recovered</button>
-					<button class='button'>Compare</button>
-					<button class='button'>Measures</button>
+					<button id="cases" class='button'>Cases</button>
+					<button id="deaths" class='button'>Deaths</button>
+					<button id="recovered" class='button'>Recovered</button>
+					<button id="compare" class='button'>Compare</button>
+					<button id="measures" class='button'>Measures</button>
 				</div>
-				<div id = "map_container_svg" class='scaling-svg-container'>
-					
+
+				<div class="slider">
+					<g> </g>
+				</div>
+				<div class='scaling-svg-container' id='map_container_svg'>
 				</div>
 			</div>
 			<div class='right_scroll_plot'>
