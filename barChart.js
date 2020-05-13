@@ -2,8 +2,8 @@
 
 const barChart = britecharts.bar();
 
-buildSVG('.right_scroll_plot')
-//const container = d3.select('.right_scroll_plot').append("svg").attr("width", 400).attr("height", 350);
+//buildSVG('.right_scroll_plot')
+const container = d3.select('.right_scroll_plot').append("svg").attr("width", 400).attr("height", 350);
 
 // Create Dataset with proper shape
 const barData = [
@@ -13,6 +13,7 @@ const barData = [
     { name: 'Radiant', value: 3 }
 ];
 
+console.log(barData);
 // Configure chart
 barChart
     .margin({left: 100})
