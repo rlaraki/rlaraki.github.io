@@ -1,4 +1,3 @@
-
 class MapPlot {
 
 
@@ -15,11 +14,11 @@ class MapPlot {
 
 		//Define map projection
 		var projection = d3.geoMercator()
-								 .translate([this.svg_width/2, this.svg_height/2])
-								 .scale([this.svg_width * 0.15]);
+								 .translate([width/2, height/2])
+								 .scale([width * 0.15]);
 
 		//Define path generator
-		var path = d3.geoPath()
+		this.path = d3.geoPath()
 						 .projection(projection);
 
 		this.map_promise = d3.json("data/countries.json").then((topojson_raw) => {
@@ -30,6 +29,8 @@ class MapPlot {
 		this.data_promise = this.getData();
 
 	}
+
+
 
 
 	draw(){
@@ -74,12 +75,27 @@ class MapPlot {
 
 			const map_container = this.svg.append("g").attr('id', 'svg g');
 
-
+			var pred;
 			var countryShapes = map_container.selectAll("path")
 				 .data(map_data)
 				 .enter()
 				 .append("path")
-				 .attr("d", path);
+				 .on("mouseover",function(){
+					 pred = this.style.fill;
+					 d3.select(this).style('fill', 'red').style('stroke');
+				  	})
+ 	          .on("mouseout",function(){
+		 					d3.select(this).style('fill', pred);})
+							.on("click", function(){
+								if (this.style.stroke != 'red'){
+								d3.select(this).style('stroke', 'red');
+							} else {
+								d3.select(this).style('stroke', null);
+							}
+							})
+						.attr('fill', 'black')
+								.attr("d", path);
+
 
 			 let current_plot = this;
 
@@ -109,58 +125,10 @@ class MapPlot {
 
 	 	 								 });
 	 			this.svg.call(zoom);
-				this.makeLegend(map_container, [20, 20], [width * 0.5, height * 0.05]);
+				this.makeLegend(map_container, [width*0.55, height*0.05], [width * 0.40, height * 0.03]);
 		});
 	}
 
-  redraw(){
-
-		var map_container_svg = document.getElementById('map_container_svg')
-		const svg_viewbox = this.svg.node().viewBox.animVal;
-
-		const width = svg_viewbox.width;
-		const height= svg_viewbox.height;
-
-		var projection = d3.geoMercator()
-								 .translate([width/2, width/2])
-								 .scale([width * 0.15]);
-
-		// use projection fn with geoPath fn
-		var path = d3.geoPath()
-						 .projection(projection);
-
-		var g = document.getElementById('svg g');
-		if (g) g.remove();
-
-		this.svg
-			.attr('preserveAspectRatio', 'xMinYMin meet')
-			.attr('viewBox', '0 0 ' + map_container_svg.offsetWidth.toString(10) + ' ' + map_container_svg.offsetHeight.toString(10))
-			.classed('scaling-svg', true);
-
-				//Bind data and create one path per GeoJSON feature
-
-
-		Promise.all([this.map_promise]).then((results) => {
-			let map_data = results[0];
-			const map_container = this.svg.append("g").attr('id', 'svg g');
-
-			map_container.selectAll("path")
-					 .data(map_data)
-					 .enter()
-					 .append("path")
-					 .attr("d", path)
-					 .style("fill", "steelblue");
-				 const zoom = d3.zoom()
-	 	 					       .scaleExtent([1, 8])
-	 	 					       .on('zoom', function() {
-	 										 d3.event.transform.x = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
-	 						   				d3.event.transform.y = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
-	 											map_container.selectAll('path').attr("transform", d3.event.transform);
-
-	 	 								 });
-	 			this.svg.call(zoom);
-		});
-	}
 }
 
 
@@ -221,9 +189,9 @@ class MapMeasures extends MapPlot {
 
 		// Axis numbers
 		const colorbar_axis = d3.axisTop(value_to_svg)
-			.tickFormat(d3.format(".0f"))
+		.tickFormat(d3.format(".0f"))
 
-		const colorbar_g = svg
+		const colorbar_g = svg.append('g')
 			.attr("id", "colorbar")
 			.attr("transform", "translate(" + top_left[0] + ', ' + top_left[1] + ")")
 			.call(colorbar_axis);
@@ -274,12 +242,13 @@ function whenDocumentLoaded(action) {
 }
 
 whenDocumentLoaded(() => {
-	plot_object = new MapPlot('map-plot8');
+	plot_object = new MapMeasures('map-plot8');
+	plot_object.draw();
+
+  //plot_object.ready();
 
 	window.onresize = function() {
 		console.log("resize")
 		plot_object.draw();
 	};
 });
-
-	// plot object is global, you can inspect it in the dev-console
