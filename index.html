@@ -31,19 +31,33 @@
 					<button id="measures" class='button'>Measures</button>
 				</div>
 
-				<div class="slider">
-					<g> </g>
+				<div id="slider">
+					<label for= "slider_id"
+								 style="display: inline-block; text-align: right;">
+								 <span id="date-value"></span>
+					</label>
 				</div>
-				<div class='scaling-svg-container' id='map_container_svg'>
-				</div>
+				<div class='scaling-svg-container' id='map_container_svg'></div>
+				<style>
+				.point {
+						fill: rgb(255, 141, 82);
+						opacity: 0.05;
+					}
+				</style>
 			</div>
 			<div class='right_scroll_plot'>
 			</div>
 
 	</div>
 		<script src='lib/d3.min.js'></script>
+		<script src="https://d3js.org/d3-time.v1.min.js"></script>
+		<script src="https://d3js.org/d3-time-format.v2.min.js"></script>
 		<script src='lib/topojson.min.js'></script>
 		<script src='main.js'></script>
+		<script src='mapChoropleth.js'></script>
+		<script src='mapBubble.js'></script>
+		<script src='mapMeasures.js'></script>
+		<script src='mapCases.js'></script>
 		<script src='barChart.js'></script>
 	</body>
 </html>
