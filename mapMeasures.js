@@ -21,8 +21,7 @@ class MapMeasures extends MapChoropleth {
 				}
 				dates[date] = date;
 			});
-			dates = Object.values(dates);
-			dates.sort(function(a,b) { return a - b; });
+			dates = d3.keys(dates).sort(function(a,b) { return new Date(a) - new Date(b); });
 			return [country_to_year_to_data, dates];
 		});
 		return gov_measures;

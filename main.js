@@ -58,25 +58,45 @@ whenDocumentLoaded(() => {
 
 	const cases_query = document.getElementById('cases');
 	cases_query.addEventListener('click', () => {
-		plot_object = new MapCases('map-plot8');
+		var point = document.getElementById('point_svg');
+		if (point)
+			point.remove();
+		plot_object = new MapCases();
+		plot_object.draw();
+	});
+
+	const recovered_query = document.getElementById('recovered');
+	recovered_query.addEventListener('click', () => {
+		var point = document.getElementById('point_svg');
+		if (point)
+			point.remove();
+		plot_object = new MapRecovered();
+		plot_object.draw();
+	});
+
+	const deaths_query = document.getElementById('deaths');
+	deaths_query.addEventListener('click', () => {
+		var point = document.getElementById('point_svg');
+		if (point)
+			point.remove();
+		plot_object = new MapDeaths();
 		plot_object.draw();
 	});
 
 
 	const measures_query = document.getElementById('measures');
 	measures_query.addEventListener('click', () => {
+		var point = document.getElementById('point_svg');
+		if (point)
+			point.remove();
 		plot_object = new MapMeasures();
 		plot_object.draw();
 	});
+
 
 	window.onresize = function() {
 		console.log("resize")
 		plot_object.draw();
 	};
-
-
-
-
-
 
 });
