@@ -29,6 +29,10 @@ class MapBubble extends MapPlot {
 		var c = document.getElementById('colorbar-area');
 		if (c) c.remove();
 
+    var point = document.getElementById('point_svg');
+    if (point)
+      point.remove();
+
 
 		this.svg
 			.attr('preserveAspectRatio', 'xMinYMin meet')
@@ -43,7 +47,6 @@ class MapBubble extends MapPlot {
 
 
 			this.map_container = this.svg.append("g").attr('id', 'svg g');
-			var point_container = this.svg.append("g").attr('id', 'point_svg');
 
 			let current_plot = this;
 
@@ -91,7 +94,7 @@ class MapBubble extends MapPlot {
 	 				current_plot.drawData(countryShapes, date, this.value, data, projection, point_container);
 	 			});
 
-			var point_container = current_plot.svg.append("g").attr('id', 'point_svg');
+			var point_container = this.svg.append("g").attr('id', 'point_svg');
 			this.drawData(countryShapes, dates[0], 0, data, projection, point_container);
 
 			const zoom = d3.zoom()

@@ -29,6 +29,10 @@ class MapChoropleth extends MapPlot {
 		var c = document.getElementById('colorbar-area');
 		if (c) c.remove();
 
+    var point = document.getElementById('point_svg');
+    if (point)
+      point.remove();
+
 
 		this.svg
 			.attr('preserveAspectRatio', 'xMinYMin meet')

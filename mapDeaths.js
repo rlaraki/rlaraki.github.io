@@ -1,10 +1,10 @@
-class MapCases extends MapBubble {
+class MapDeaths extends MapBubble {
 	constructor() {
 		super();
 	}
 
 	getData() {
-		const cases_data = d3.csv("data_website/map_cdr.csv").then((data) => {
+		const deaths_data = d3.csv("data_website/map_cdr.csv").then((data) => {
 			let year_to_data = {};
 			let dates = {};
 
@@ -17,7 +17,7 @@ class MapCases extends MapBubble {
           data = {};
           data["lon"] =  row.longitude;
           data["lat"] =  row.latitude;
-          data["cases"] =  parseInt(row.confirmed);
+          data["deaths"] =  parseInt(row.deaths);
           year_to_data[date].push(data);
 				}
 				dates[date] = date;
@@ -25,14 +25,14 @@ class MapCases extends MapBubble {
 			dates = d3.keys(dates).sort(function(a,b) { return new Date(a) - new Date(b); });
 			return [year_to_data, dates];
 		});
-		return cases_data;
+		return deaths_data;
 	}
 
 
 	drawData(countryShapes, date, value, data, projection, point_container) {
     console.log(data);
     this.point_scale = d3.scaleLinear()
-        .domain([0, d3.max(data[date], d => d["cases"])])
+        .domain([0, d3.max(data[date], d => d["deaths"])])
         .range([0, 15]);
 
 
@@ -44,7 +44,7 @@ class MapCases extends MapBubble {
       .data(data[date])
 			.enter()
 			.append("circle")
-			.attr("r",  (d) => this.point_scale(d["cases"]))
+			.attr("r",  (d) => this.point_scale(d["deaths"]))
 			.attr("cx", (d) => projection([d["lon"], d["lat"]])[0])
 			.attr("cy", (d) => projection([d["lon"], d["lat"]])[1])
       .style("fill", "red");
