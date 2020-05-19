@@ -1,3 +1,5 @@
+var list_countries = ['France', 'Switzerland']
+
 
 class MapPlot {
 
@@ -12,7 +14,9 @@ class MapPlot {
 				.attr('viewBox', '0 0 ' + width.toString(10) + ' ' + height.toString(10)) 
 				.classed('scaling-svg', true);
 
+
 		this.map_promise = d3.json("data/countries.json").then((topojson_raw) => {
+
 	 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
 	 			return country_paths.features;
 	 		});
@@ -30,7 +34,9 @@ class MapPlot {
 
 
 	getData() {
+
 		throw new Error('Map plot class do not contain data');
+
 	}
 
 	drawData(countryShapes, date, value, data, projection) {
