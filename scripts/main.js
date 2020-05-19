@@ -1,4 +1,6 @@
 
+var list_countries = ['France', 'Switzerland']
+
 class MapPlot {
 
 	constructor() {
@@ -21,8 +23,6 @@ class MapPlot {
 	drawData(countryShapes, date, value, data, projection) {
 		throw new Error('Map plot class do not contain data and thus the map can not be drawn');
 	}
-
-
 }
 
 function formatDate(input, formatInput, formatOutput){
@@ -130,8 +130,8 @@ function getData() {
 		return [country_to_year_to_data, dates];
 	});
 	return [cases, recovered, deaths, gov_measures]
-}
 
+	}
 
 
 function whenDocumentLoaded(action) {
@@ -142,7 +142,6 @@ function whenDocumentLoaded(action) {
 		action();
 	}
 }
-
 
 
 whenDocumentLoaded(() => {
@@ -163,6 +162,7 @@ whenDocumentLoaded(() => {
 		if (point)
 			point.remove();
 		plot_object = new MapCases(cases);
+		plot_object = new MapCases();
 		plot_object.draw();
 	});
 
@@ -172,6 +172,7 @@ whenDocumentLoaded(() => {
 		if (point)
 			point.remove();
 		plot_object = new MapRecovered(recovered);
+		plot_object = new MapRecovered();
 		plot_object.draw();
 	});
 
@@ -181,6 +182,7 @@ whenDocumentLoaded(() => {
 		if (point)
 			point.remove();
 		plot_object = new MapDeaths(deaths);
+		plot_object = new MapDeaths();
 		plot_object.draw();
 	});
 
@@ -191,6 +193,7 @@ whenDocumentLoaded(() => {
 		if (point)
 			point.remove();
 		plot_object = new MapMeasures(gov_measures);
+		plot_object = new MapMeasures();
 		plot_object.draw();
 	});
 
