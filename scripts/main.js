@@ -1,3 +1,5 @@
+var list_countries = ['France', 'Switzerland']
+
 
 class MapPlot {
 
@@ -22,7 +24,7 @@ class MapPlot {
 		var path = d3.geoPath()
 						 .projection(projection);
 
-		this.map_promise = d3.json("data/countries.json").then((topojson_raw) => {
+		this.map_promise = d3.json("./data/countries.json").then((topojson_raw) => {
 	 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
 	 			return country_paths.features;
 	 		});
@@ -125,7 +127,7 @@ class MapMeasures extends MapPlot {
 	}
 
 	getData() {
-		const gov_measures = d3.csv("data_website/gov_si.csv").then((data) => {
+		const gov_measures = d3.csv("./data_website/gov_si.csv").then((data) => {
 			let country_to_year_to_data = {};
 			let dates = {};
 
