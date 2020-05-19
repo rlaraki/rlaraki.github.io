@@ -45,8 +45,6 @@ class MapBubble extends MapPlot {
 			let data = results[1][0];
 			let dates = results[1][1];
       this.max = results[1][2];
-      console.log('buble ', this.max);
-
 
 			this.map_container = this.svg.append("g").attr('id', 'svg g');
 
@@ -108,6 +106,19 @@ class MapBubble extends MapPlot {
 												point_container.selectAll('circle').attr('transform', d3.event.transform.toString());
 	 	 								 });
 	 			this.svg.call(zoom);
+        this.map_container.append("g")
+          .attr("fill", "#777")
+          .attr("transform", "translate(" + width * 0.05 + ', ' + height * 0.95 + ")")
+          .attr("text-anchor", "middle")
+          .style("font", "10px sans-serif")
+          .selectAll("circle")
+            .data([parseInt(this.max/4), parseInt(this.max/2), parseInt(this.max)])
+            .enter()
+            .append("circle")
+      	        .attr("fill", "none")
+      	        .attr("stroke", "black")
+      	        .attr("cy", d => -this.point_scale(d))
+      	        .attr("r", this.point_scale);
 		});
 	}
 

@@ -151,7 +151,6 @@ whenDocumentLoaded(() => {
 	const recovered = data[1];
 	const deaths = data[2];
 	const gov_measures = data[3];
-	console.log(recovered);
 
 	plot_object = new MapCases(cases);
 	plot_object.draw();
@@ -162,7 +161,6 @@ whenDocumentLoaded(() => {
 		if (point)
 			point.remove();
 		plot_object = new MapCases(cases);
-		plot_object = new MapCases();
 		plot_object.draw();
 	});
 
@@ -172,7 +170,6 @@ whenDocumentLoaded(() => {
 		if (point)
 			point.remove();
 		plot_object = new MapRecovered(recovered);
-		plot_object = new MapRecovered();
 		plot_object.draw();
 	});
 
@@ -182,7 +179,6 @@ whenDocumentLoaded(() => {
 		if (point)
 			point.remove();
 		plot_object = new MapDeaths(deaths);
-		plot_object = new MapDeaths();
 		plot_object.draw();
 	});
 
@@ -193,7 +189,6 @@ whenDocumentLoaded(() => {
 		if (point)
 			point.remove();
 		plot_object = new MapMeasures(gov_measures);
-		plot_object = new MapMeasures();
 		plot_object.draw();
 	});
 
