@@ -1,4 +1,3 @@
-
 var list_countries = ['France', 'Switzerland']
 
 class MapPlot {
