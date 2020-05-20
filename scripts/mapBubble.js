@@ -61,15 +61,21 @@ class MapBubble extends MapPlot {
 				  	})
  	          .on("mouseout",function(){
 		 					d3.select(this).style('fill', pred);})
-							.on("click", function(){
+							.on("click", function(d){
 								if (this.style.stroke != 'red'){
 								d3.select(this).style('stroke', 'red');
+                list_countries.push(d.properties.name)
 							} else {
 								d3.select(this).style('stroke', null);
+                var p=  list_countries.indexOf(d.properties.name)
+                list_countries.splice(p, 1)
 							}
+              console.log(list_countries)
 							})
 						.attr('fill', 'black')
 								.attr("d", path);
+
+
 
 
 			 d3.select("#slider")
