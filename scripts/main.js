@@ -51,7 +51,7 @@ function getData() {
 				data = {};
 				data["lon"] =  row.longitude;
 				data["lat"] =  row.latitude;
-				data["confirmed"] =  parseInt(row.confirmed);
+				data["data"] =  parseInt(row.confirmed);
 				year_to_cases[date].push(data);
 			}
 			dates[date] = date;
@@ -77,7 +77,7 @@ function getData() {
 				data = {};
 				data["lon"] =  row.longitude;
 				data["lat"] =  row.latitude;
-				data["recovered"] =  parseInt(row.recovered);
+				data["data"] =  parseInt(row.recovered);
 				year_to_recovered[date].push(data);
 			}
 			dates[date] = date;
@@ -103,7 +103,7 @@ function getData() {
 				data = {};
 				data["lon"] =  row.longitude;
 				data["lat"] =  row.latitude;
-				data["deaths"] =  parseInt(row.deaths);
+				data["data"] =  parseInt(row.deaths);
 				year_to_deaths[date].push(data);
 			}
 			dates[date] = date;
