@@ -18,6 +18,8 @@ class MapPlot {
 	 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
 	 			return country_paths.features;
 	 		});
+		this.tooltip = d3.select('.scaling-svg-container').append('div')
+				.attr('class', 'hidden tooltip');
 
 	}
 	drawData(countryShapes, date, value, data, projection) {
@@ -49,7 +51,7 @@ function getData() {
 				data = {};
 				data["lon"] =  row.longitude;
 				data["lat"] =  row.latitude;
-				data["confirmed"] =  parseInt(row.confirmed);
+				data["data"] =  parseInt(row.confirmed);
 				year_to_cases[date].push(data);
 			}
 			dates[date] = date;
@@ -75,7 +77,7 @@ function getData() {
 				data = {};
 				data["lon"] =  row.longitude;
 				data["lat"] =  row.latitude;
-				data["recovered"] =  parseInt(row.recovered);
+				data["data"] =  parseInt(row.recovered);
 				year_to_recovered[date].push(data);
 			}
 			dates[date] = date;
@@ -84,14 +86,52 @@ function getData() {
 		return [year_to_recovered, dates, max];
 	});
 
-	const deaths = d3.csv("data_website/map_cdr.csv").then((data) => {
+	const cdr = d3.csv("data_website/map_cdr.csv").then((data) => {
+		let year_to_cases = {};
+		let year_to_recovered = {};
 		let year_to_deaths = {};
+
 		let dates = {};
-		let max = 0;
+
+		let max_cases = 0;
+		let max_recovered = 0;
+		let max_deaths = 0;
 
 		data.forEach((row) => {
-			if (row.deaths > max) {
-				max = parseInt(row.deaths);
+			// Cases
+			if (row.confirmed > max_cases) {
+				max_cases = parseInt(row.confirmed);
+			}
+			var date = this.formatDate(row.Date, "%Y-%m-%d", "%B %d, %Y");
+			if (year_to_cases[date] == undefined) {
+				year_to_cases[date] = [];
+			}
+			else {
+				data = {};
+				data["lon"] =  row.longitude;
+				data["lat"] =  row.latitude;
+				data["data"] =  parseInt(row.confirmed);
+				year_to_cases[date].push(data);
+			}
+			// Recoverd
+			if (row.recovered > max_recovered) {
+				max_recovered = parseInt(row.recovered);
+			}
+			var date = this.formatDate(row.Date, "%Y-%m-%d", "%B %d, %Y");
+			if (year_to_recovered[date] == undefined) {
+				year_to_recovered[date] = [];
+			}
+			else {
+				data = {};
+				data["lon"] =  row.longitude;
+				data["lat"] =  row.latitude;
+				data["data"] =  parseInt(row.recovered);
+				year_to_recovered[date].push(data);
+			}
+
+			//Deaths
+			if (row.deaths > max_deaths) {
+				max_deaths = parseInt(row.deaths);
 			}
 			var date = this.formatDate(row.Date, "%Y-%m-%d", "%B %d, %Y");
 			if (year_to_deaths[date] == undefined) {
@@ -101,13 +141,13 @@ function getData() {
 				data = {};
 				data["lon"] =  row.longitude;
 				data["lat"] =  row.latitude;
-				data["deaths"] =  parseInt(row.deaths);
+				data["data"] =  parseInt(row.deaths);
 				year_to_deaths[date].push(data);
 			}
 			dates[date] = date;
 		});
 		dates = d3.keys(dates).sort(function(a,b) { return new Date(a) - new Date(b); });
-		return [year_to_deaths, dates, max];
+		return [[year_to_cases, max_cases], [year_to_recovered, max_recovered], [year_to_deaths, max_deaths], [dates]];
 	});
 
 
@@ -118,18 +158,17 @@ function getData() {
 
 		data.forEach((row) => {
 			var date = this.formatDate(row.Date, "%Y-%m-%d", "%B %d, %Y");
-			if (country_to_year_to_data[row.CountryName] == undefined) {
-				country_to_year_to_data[row.CountryName] = {}
+			if (country_to_year_to_data[row.Entity] == undefined) {
+				country_to_year_to_data[row.Entity] = {}
 			}
-			else {
-				country_to_year_to_data[row.CountryName][date] = parseFloat(row.StringencyIndexForDisplay);
-			}
+			country_to_year_to_data[row.Entity][date] = parseFloat(row.StringencyIndex);
+
 			dates[date] = date;
 		});
 		dates = d3.keys(dates).sort(function(a,b) { return new Date(a) - new Date(b); });
 		return [country_to_year_to_data, dates];
 	});
-	return [cases, recovered, deaths, gov_measures]
+	return [cdr, gov_measures]
 
 	}
 
@@ -147,20 +186,23 @@ function whenDocumentLoaded(action) {
 whenDocumentLoaded(() => {
 
 	const data = getData();
-	const cases = data[0];
-	const recovered = data[1];
-	const deaths = data[2];
-	const gov_measures = data[3];
+	const cdr = data[0];
+	const gov_measures = data[1];
 
-	plot_object = new MapCases(cases);
+	plot_object = new MapBubble(cdr);
 	plot_object.draw();
+	var change = false;
 
 	const cases_query = document.getElementById('cases');
 	cases_query.addEventListener('click', () => {
 		var point = document.getElementById('point_svg');
 		if (point)
 			point.remove();
-		plot_object = new MapCases(cases);
+		if (change) {
+			plot_object = new MapBubble(cdr);
+			change = false;
+		}
+		plot_object.color = "red";
 		plot_object.draw();
 	});
 
@@ -169,7 +211,11 @@ whenDocumentLoaded(() => {
 		var point = document.getElementById('point_svg');
 		if (point)
 			point.remove();
-		plot_object = new MapRecovered(recovered);
+		if (change) {
+			plot_object = new MapBubble(cdr);
+			change = false;
+		}
+		plot_object.color = "green";
 		plot_object.draw();
 	});
 
@@ -178,7 +224,11 @@ whenDocumentLoaded(() => {
 		var point = document.getElementById('point_svg');
 		if (point)
 			point.remove();
-		plot_object = new MapDeaths(deaths);
+		if (change) {
+			plot_object = new MapBubble(cdr);
+			change = false;
+		}
+		plot_object.color = "black";
 		plot_object.draw();
 	});
 
@@ -190,12 +240,13 @@ whenDocumentLoaded(() => {
 			point.remove();
 		plot_object = new MapMeasures(gov_measures);
 		plot_object.draw();
+		change = true;
 	});
 
 
 	window.onresize = function() {
 		console.log("Resize")
-		plot_object.draw();
+		plot_object.draw(plot_object.date_ind);
 	};
 
 });
