@@ -93,8 +93,8 @@ class MapChoropleth extends MapPlot {
               .style('opacity', pred_opacity)
               .style('stroke', pred_stroke_color);})
   				.on("click", function(){
-  					if (this.style.stroke != 'black'){
-  					  d3.select(this).style('stroke', 'black')
+  					if (this.style.stroke != 'red'){
+  					  d3.select(this).style('stroke', 'red')
                 .style('stroke-width', 1);
   				} else {
   					d3.select(this).style('stroke', null);

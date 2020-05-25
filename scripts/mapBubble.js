@@ -1,8 +1,22 @@
 class MapBubble extends MapPlot {
 
-  constructor() {
+  constructor(data) {
 		super();
+    this.data_promise = data;
+    this.color = "red";
 	}
+
+  filter_data(data) {
+    if (this.color == "red") {
+      return [data[0][0], data[0][1], data[3][0]];
+    }
+    else if (this.color == "green") {
+      return [data[1][0], data[1][1], data[3][0]];
+    }
+    else {
+      return [data[2][0], data[2][1], data[3][0]];
+    }
+  }
 
   draw(date_indice = 0){
 
@@ -42,9 +56,11 @@ class MapBubble extends MapPlot {
 
 		Promise.all([this.map_promise, this.data_promise]).then((results) => {
 			let map_data = results[0];
-			let data = results[1][0];
-			let dates = results[1][1];
-      this.max = results[1][2];
+      let filtered_data = this.filter_data(results[1]);
+      let data = filtered_data[0];
+      this.max = filtered_data[1];
+      let dates = filtered_data[2];
+
 
 			this.map_container = this.svg.append("g").attr('id', 'svg g');
 
