@@ -12,7 +12,7 @@ class MapPlot {
 				.attr('preserveAspectRatio', 'xMinYMin meet') 
 				.attr('viewBox', '0 0 ' + width.toString(10) + ' ' + height.toString(10)) 
 				.classed('scaling-svg', true);
-
+		
 		this.map_promise = d3.json("data/countries.json").then((topojson_raw) => {
 	 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
 	 			return country_paths.features;
