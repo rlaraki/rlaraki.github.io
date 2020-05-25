@@ -124,6 +124,8 @@ class MapBubble extends MapPlot {
 
 
 
+
+
 			 d3.select("#slider")
  				.select("label")
  				.style("width", width*0.25);

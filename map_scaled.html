@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/topojson.v2.min.js"></script>
+  <style>
+    body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
+    .chart {
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <svg></svg>
+  <script>
+    var svg = d3.select('svg'),
+        width = window.innerWidth,
+        height = window.innerHeight;
+
+
+		var states;
+
+    function draw() {
+      // projection fn so we can fit geodata within svg's area
+			var projection = d3.geoMercator()
+									 .translate([width/2, height/2])
+									 .scale([width * 0.15]);
+
+      // use projection fn with geoPath fn
+			var path = d3.geoPath()
+							 .projection(projection);
+
+      var g = d3.select('svg g');
+      if (g) g.remove();
+
+      svg.attr('width', width)
+      	.attr('height', height);
+
+      svg.append("g")
+      		.attr("class", "states")
+      	.selectAll("path")
+        .data(states.features)
+        .enter()
+				.append("path")
+				 .attr("d", path)
+				 .style("fill", "steelblue");
+    }
+
+    d3.json("data/countries.json", function(error, us) {
+      if (error) throw error;
+
+      // convert our topojson to geojson
+      states = topojson.feature(us, us.objects.countries);
+
+      // initial drawing of the map
+      draw();
+
+      // event listener that redraws when the window size changes
+      // you would probably want to throttle this in production
+      window.onresize = function() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        draw();
+      };
+    });
+  </script>
+</body>
