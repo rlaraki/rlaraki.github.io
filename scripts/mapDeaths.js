@@ -5,17 +5,16 @@ class MapDeaths extends MapBubble {
 	}
 
 
-	drawData(countryShapes, date, value, data, projection, point_container) {
-    this.point_scale = d3.scaleLinear()
+	drawData(date, value, data, projection, point_container) {
+    this.point_scale = d3.scaleSqrt()
         .domain([0, this.max])
-        .range([0, 15]);
+        .range([0, 40]);
 
 
 
 		d3.select("#date-value").text(date);
 		d3.select("#slider_id").property("value", value);
 
-		countryShapes.style("fill", "#ccc");
     point_container.selectAll("circle")
       .data(data[date])
 			.enter()

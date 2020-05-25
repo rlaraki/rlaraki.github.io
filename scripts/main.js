@@ -18,6 +18,8 @@ class MapPlot {
 	 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
 	 			return country_paths.features;
 	 		});
+		this.tooltip = d3.select('.scaling-svg-container').append('div')
+				.attr('class', 'hidden tooltip');
 
 	}
 	drawData(countryShapes, date, value, data, projection) {
@@ -118,12 +120,11 @@ function getData() {
 
 		data.forEach((row) => {
 			var date = this.formatDate(row.Date, "%Y-%m-%d", "%B %d, %Y");
-			if (country_to_year_to_data[row.CountryName] == undefined) {
-				country_to_year_to_data[row.CountryName] = {}
+			if (country_to_year_to_data[row.Entity] == undefined) {
+				country_to_year_to_data[row.Entity] = {}
 			}
-			else {
-				country_to_year_to_data[row.CountryName][date] = parseFloat(row.StringencyIndexForDisplay);
-			}
+			country_to_year_to_data[row.Entity][date] = parseFloat(row.StringencyIndex);
+
 			dates[date] = date;
 		});
 		dates = d3.keys(dates).sort(function(a,b) { return new Date(a) - new Date(b); });
@@ -195,7 +196,7 @@ whenDocumentLoaded(() => {
 
 	window.onresize = function() {
 		console.log("Resize")
-		plot_object.draw();
+		plot_object.draw(plot_object.date_ind);
 	};
 
 });

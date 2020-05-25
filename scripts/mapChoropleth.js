@@ -2,9 +2,10 @@ class MapChoropleth extends MapPlot {
 
   constructor() {
 		super();
+    this.date_ind = 0;
 	}
 
-  draw(){
+  draw(date_indice = 0){
 
 		var map_container_svg = document.getElementById('map_container_svg')
 		this.svg_viewbox = this.svg.node().viewBox.animVal;
@@ -44,38 +45,64 @@ class MapChoropleth extends MapPlot {
 			let map_data = results[0];
 			let data = results[1][0];
 			let dates = results[1][1];
-
-      console.log(data);
+      let current_plot = this;
 
       map_data.forEach(country => {
         country.properties.date = data[country.properties.name];
+        country.properties.selectioned =  list_countries.indexOf(country.properties.name)
       });
 
 			this.map_container = this.svg.append("g").attr('id', 'svg g');
 
-			let current_plot = this;
+      var format = d3.format(",");
 
-			var pred;
-			var countryShapes = this.map_container.selectAll("path")
+      var pred;
+			var pred_opacity;
+      var pred_stroke_color;
+      var countryShapes = this.map_container.selectAll("path")
 				 .data(map_data)
 				 .enter()
 				 .append("path")
-				 .on("mouseover",function(){
-					 pred = this.style.fill;
-					 d3.select(this).style('fill', 'red').style('stroke');
-				  	})
- 	          .on("mouseout",function(){
-		 					d3.select(this).style('fill', pred);})
-							.on("click", function(){
-								if (this.style.stroke != 'red'){
-								d3.select(this).style('stroke', 'red');
-							} else {
-								d3.select(this).style('stroke', null);
-							}
-							})
-						.attr('fill', 'black')
-								.attr("d", path);
+         .attr("d", path)
+				 .on("mouseover",function(d){
+					 pred = this.style.stroke_width;
+           pred_opacity = this.style.opacity;
+           pred_stroke_color = this.style.stroke;
+           if (this.style.stroke != 'black'){
+             d3.select(this)
+                .style('stroke', 'white')
+                .style('stroke-width', 1)
+                .style('opacity', 1.2);
+           } else {
+             d3.select(this)
+                .style('stroke', 'black')
+                .style('stroke-width', 1)
+                .style('opacity', 1.2);
+           }
 
+				  	})
+          .on("mousemove", function(d) {
+            var coordinates = d3.mouse(current_plot.svg.node());
+            current_plot.tooltip.classed('hidden', false)
+             .attr('style', 'left:' + (coordinates[0] + 20) + 'px; top:' + coordinates[1] + 'px')
+             .html("<strong>Country: </strong><span class='details'>" + d.properties.name + "<br></span>" + "<strong>Stringency Index: </strong><span class='details'>" + format(d.properties.date[dates[current_plot.date_ind]]) +"</span>");
+          })
+          .on("mouseout",function(d){
+            current_plot.tooltip.classed('hidden', true);
+  					d3.select(this).style('stroke-width', 1)
+              .style('opacity', pred_opacity)
+              .style('stroke', pred_stroke_color);})
+  				.on("click", function(){
+  					if (this.style.stroke != 'black'){
+  					  d3.select(this).style('stroke', 'black')
+                .style('stroke-width', 1);
+  				} else {
+  					d3.select(this).style('stroke', null);
+  				}
+          pred_stroke_color = this.style.stroke;
+  				})
+          .attr('fill', 'black')
+          .attr('opacity', 0.8)
 
 			 d3.select("#slider")
  				.select("label")
@@ -93,10 +120,11 @@ class MapChoropleth extends MapPlot {
 	 			.on("input", function() {
 	 				var date = dates[this.value];
 					var point = document.getElementById('point_svg');
+          current_plot.date_ind = this.value;
 	 				current_plot.drawData(countryShapes, date, this.value, data);
 	 			});
 
-			this.drawData(countryShapes, dates[0], 0, data);
+			this.drawData(countryShapes, dates[date_indice], date_indice);
 
 			const zoom = d3.zoom()
 	 	 					       .scaleExtent([1, 8])
@@ -104,7 +132,6 @@ class MapChoropleth extends MapPlot {
 	 										  d3.event.transform.x = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
 	 						   				d3.event.transform.y = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
 	 											current_plot.map_container.selectAll('path').attr("transform", d3.event.transform);
-                        console.log('hahahhahahh');
 	 	 								 });
 	 			this.svg.call(zoom);
 				this.makeLegend(this.map_container, [35, height*0.25], [width * 0.03, height * 0.5]);
@@ -163,9 +190,10 @@ class MapChoropleth extends MapPlot {
 			.style('fill', 'url(#colorbar-gradient)')
 			.style('stroke', 'black')
 			.style('stroke-width', '1px')
+      .style('opacity', 0.8);
 	}
 
-  drawData(countryShapes, date, value, data) {
+  drawData(countryShapes, date, value) {
 
 		const current_class = this;
 		d3.select("#date-value").text(date);
@@ -173,12 +201,22 @@ class MapChoropleth extends MapPlot {
 
 		countryShapes.style("fill", function(d) {
 			if (d.properties.date != undefined) {
-				return current_class.color_scale(d.properties.date[date]);
+        if (d.properties.date[date] != undefined) {
+          return current_class.color_scale(d.properties.date[date]);
+        }
+				else {
+          return "#ccc";
+        }
 			}
 			else {
-				return current_class.color_scale(d.properties.date);
+				return "#ccc";
 			}
-		});
+		})
+    .style('stroke', function(d) {
+      if (d.properties.selectioned >= 0) {
+        return 'red';
+      }
+    });
 	}
 
 }
