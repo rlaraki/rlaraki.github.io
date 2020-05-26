@@ -190,6 +190,19 @@ function getData() {
 
 	}
 
+	function get_data_plots(){
+		var data = [];
+
+		var request = new XMLHttpRequest();
+		request.open('GET', '../data/general_data.json', false);
+		request.send(null)
+
+		var casesData = JSON.parse(request.responseText)
+
+		data = [casesData['Switzerland'], casesData['France']];
+		return data;
+	}
+
 
 function whenDocumentLoaded(action) {
 	if (document.readyState === "loading") {
@@ -204,11 +217,15 @@ function whenDocumentLoaded(action) {
 whenDocumentLoaded(() => {
 
 	const data = getData();
+	const data_plots = get_data_plots()
 	const cdr = data[0];
 	const gov_measures = data[1];
 
 	plot_object = new MapBubble(cdr);
 	plot_object.draw();
+	plot_object.class_name = "Confirmed cases";
+	line_chart = new measures_plot("Confirmed cases",data)
+	line_chart.draw(data_plots)
 	var change = false;
 
 	const cases_query = document.getElementById('cases');
@@ -220,7 +237,7 @@ whenDocumentLoaded(() => {
 			plot_object = new MapBubble(cdr);
 			change = false;
 		}
-		plot_object.class_name = "Confirmed cases";
+
 		plot_object.draw();
 	});
 
