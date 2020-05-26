@@ -3,14 +3,14 @@ class MapBubble extends MapPlot {
   constructor(data) {
 		super();
     this.data_promise = data;
-    this.color = "red";
+    this.class_name = "Confirmed cases";
 	}
 
   filter_data(data) {
-    if (this.color == "red") {
+    if (this.class_name == "Confirmed cases") {
       return [data[0][0], data[0][1], data[3][0]];
     }
-    else if (this.color == "green") {
+    else if (this.class_name == "Recovered") {
       return [data[1][0], data[1][1], data[3][0]];
     }
     else {
@@ -30,23 +30,11 @@ class MapBubble extends MapPlot {
 								 .translate([width/2, width/2])
 								 .scale([width * 0.15]);
 
-		// use projection fn with geoPath fn
 		var path = d3.geoPath()
 						 .projection(projection);
 
-		var g = document.getElementById('svg g');
-		if (g) g.remove();
-
-		var s = document.getElementById('slider_id');
-		if (s) s.remove();
-
-		var c = document.getElementById('colorbar-area');
-		if (c) c.remove();
-
-    var point = document.getElementById('point_svg');
-    if (point)
-      point.remove();
-
+    // Check for path deletion
+    this.checkInstances();
 
 		this.svg
 			.attr('preserveAspectRatio', 'xMinYMin meet')
@@ -55,28 +43,30 @@ class MapBubble extends MapPlot {
 
 
 		Promise.all([this.map_promise, this.data_promise]).then((results) => {
+      var current_plot = this;
+      var format = d3.format(",");
+
+      // Data retrieved from the premises
 			let map_data = results[0];
       let filtered_data = this.filter_data(results[1]);
       let data = filtered_data[0];
-      this.max = filtered_data[1];
       let dates = filtered_data[2];
-
+      this.max = filtered_data[1];
 
 			this.map_container = this.svg.append("g").attr('id', 'svg g');
 
+      // insert properties in map_data
       map_data.forEach(country => {
         country.properties.selectioned =  list_countries.indexOf(country.properties.name)
       });
 
-			let current_plot = this;
 
-      var format = d3.format(",");
 			var pred;
-      let value = [dates[0], 0]
       var pred;
 			var pred_opacity;
       var pred_stroke_color;
 
+      // Creates the map with click events without the bubbles
       this.map_container.selectAll("path")
 				 .data(map_data)
 				 .enter()
@@ -135,7 +125,6 @@ class MapBubble extends MapPlot {
 				.attr("displayValue", true)
 	 			.on("input", function() {
 	 				var date = dates[this.value];
-          value = [date, this.value];
 					var point = document.getElementById('point_svg');
 					if (point)
 						point.remove();
@@ -147,6 +136,7 @@ class MapBubble extends MapPlot {
 			var point_container = this.svg.append("g").attr('id', 'point_svg');
 			this.drawData(dates[date_indice], date_indice, data, projection, point_container);
 
+      // zoom actions
 			const zoom = d3.zoom()
 	 	 					       .scaleExtent([1, 8])
 	 	 					       .on('zoom', function() {
@@ -158,6 +148,8 @@ class MapBubble extends MapPlot {
 
 	 	 								 });
 	 			this.svg.call(zoom);
+
+        // creates the legend for bubble map
         this.legend = this.map_container.append("g")
           .attr("fill", "#777")
           .attr("transform", "translate(" + width * 0.05 + ', ' + height * 0.95 + ")")
@@ -167,16 +159,19 @@ class MapBubble extends MapPlot {
             .data([parseInt(this.max/4), parseInt(this.max/2), parseInt(this.max)])
             .enter();
         this.legend.append("circle")
-      	        .attr("fill", "none")
-      	        .attr("stroke", "black")
-      	        .attr("cy", d => -this.point_scale(d))
-      	        .attr("r", this.point_scale);
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("cy", d => -this.point_scale(d))
+                .attr("r", this.point_scale);
         this.legend.append("text")
-  	        .attr("y", d => -2 * this.point_scale(d))
-  	        .attr("dy", "1.3em")
-  	        .text(d3.format(".1s"));
+            .attr("y", d => -2 * this.point_scale(d))
+            .attr("dy", "1.3em")
+            .text(d3.format(".1s"));
+
 		});
 	}
+
+
   drawData(date, value, data, projection, point_container) {
     let current = this;
 
@@ -194,7 +189,17 @@ class MapBubble extends MapPlot {
       .attr("r",  (d) => this.point_scale(d["data"]))
       .attr("cx", (d) => projection([d["lon"], d["lat"]])[0])
       .attr("cy", (d) => projection([d["lon"], d["lat"]])[1])
-      .style("fill", current.color)
+      .style("fill", function(d) {
+        if (current.class_name == "Confirmed cases") {
+          return "red";
+        }
+        else if (current.class_name == "Recovered") {
+          return "green";
+        }
+        else {
+          return "black";
+        }
+      })
       .attr("fill-opacity", 0.5)
       .on("mouseover",function(d){
         d3.select(this)
@@ -204,7 +209,7 @@ class MapBubble extends MapPlot {
         var coordinates = d3.mouse(current.svg.node());
         current.tooltip.classed('hidden', false)
          .attr('style', 'left:' + (coordinates[0] + 20) + 'px; top:' + coordinates[1] + 'px')
-         .html("<strong>Confirmed cases: </strong><span class='details'>" + d["data"] +"</span>");
+         .html("<strong>" + current.class_name + ": </strong><span class='details'>" + d["data"] +"</span>");
       })
       .on("mouseout",function(d){
         current.tooltip.classed('hidden', true);
