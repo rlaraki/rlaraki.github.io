@@ -103,6 +103,20 @@ body {
 	height: 100%;
 	width: 100%;
 }
+.hidden {
+	display: None;
+}
+div.tooltip {
+      color: #222;
+      background: #fff;
+      border-radius: 3px;
+      box-shadow: 0px 0px 2px 0px #a6a6a6;
+      padding: .2em;
+      text-shadow: #f5f5f5 0 1px 0;
+      opacity: 0.9;
+      position: absolute;
+		}
+
 
 .scaling-svg-container {
 	flex : 14;
@@ -161,4 +175,24 @@ body {
 	position: absolute;
 	top: 0;
 	left: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+
+div.tooltip {
+	line-height: 1.5;
+	font-weight: 400;
+	font-family:"avenir next", Arial, sans-serif;
+	padding: 6px;
+	background: rgba(0, 0, 0, 0.6);
+	color: #FFA500;
+	border-radius: 1px;
+	position: absolute;
+}
+
+.details{
+  color:white;
 }
