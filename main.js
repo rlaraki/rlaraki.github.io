@@ -13,7 +13,7 @@ class MapPlot {
 				.attr('preserveAspectRatio', 'xMinYMin meet') 
 				.attr('viewBox', '0 0 ' + width.toString(10) + ' ' + height.toString(10)) 
 				.classed('scaling-svg', true);
-		
+
 		this.map_promise = d3.json("data/countries.json").then((topojson_raw) => {
 	 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
 	 			return country_paths.features;
@@ -24,6 +24,24 @@ class MapPlot {
 	}
 	drawData(countryShapes, date, value, data, projection) {
 		throw new Error('Map plot class do not contain data and thus the map can not be drawn');
+	}
+
+	checkInstances() {
+		var g = document.getElementById('svg g');
+		if (g) g.remove();
+
+		var s = document.getElementById('slider_id');
+		if (s) s.remove();
+
+		var c = document.getElementById('colorbar-area');
+		if (c) c.remove();
+
+    var colorbar = document.getElementById('colorbar');
+		if (colorbar) colorbar.remove();
+
+    var point = document.getElementById('point_svg');
+    if (point)
+      point.remove();
 	}
 }
 
@@ -202,7 +220,7 @@ whenDocumentLoaded(() => {
 			plot_object = new MapBubble(cdr);
 			change = false;
 		}
-		plot_object.color = "red";
+		plot_object.class_name = "Confirmed cases";
 		plot_object.draw();
 	});
 
@@ -215,7 +233,7 @@ whenDocumentLoaded(() => {
 			plot_object = new MapBubble(cdr);
 			change = false;
 		}
-		plot_object.color = "green";
+		plot_object.class_name = "Recovered";
 		plot_object.draw();
 	});
 
@@ -228,7 +246,7 @@ whenDocumentLoaded(() => {
 			plot_object = new MapBubble(cdr);
 			change = false;
 		}
-		plot_object.color = "black";
+		plot_object.class_name = "Deaths";
 		plot_object.draw();
 	});
 

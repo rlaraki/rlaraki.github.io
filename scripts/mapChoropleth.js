@@ -21,19 +21,8 @@ class MapChoropleth extends MapPlot {
 		var path = d3.geoPath()
 						 .projection(projection);
 
-		var g = document.getElementById('svg g');
-		if (g) g.remove();
-
-		var s = document.getElementById('slider_id');
-		if (s) s.remove();
-
-		var c = document.getElementById('colorbar-area');
-		if (c) c.remove();
-
-    var point = document.getElementById('point_svg');
-    if (point)
-      point.remove();
-
+    // Check for path deletion
+    this.checkInstances();
 
 		this.svg
 			.attr('preserveAspectRatio', 'xMinYMin meet')
@@ -42,11 +31,15 @@ class MapChoropleth extends MapPlot {
 
 
 		Promise.all([this.map_promise, this.data_promise]).then((results) => {
+      var format = d3.format(",");
+
+      // Data retrieved from the premises
 			let map_data = results[0];
 			let data = results[1][0];
 			let dates = results[1][1];
       let current_plot = this;
 
+      // insert properties in map_data
       map_data.forEach(country => {
         country.properties.date = data[country.properties.name];
         country.properties.selectioned =  list_countries.indexOf(country.properties.name)
@@ -54,8 +47,8 @@ class MapChoropleth extends MapPlot {
 
 			this.map_container = this.svg.append("g").attr('id', 'svg g');
 
-      var format = d3.format(",");
 
+      // Creates the Chroropleth map
       var pred;
 			var pred_opacity;
       var pred_stroke_color;
@@ -68,14 +61,14 @@ class MapChoropleth extends MapPlot {
 					 pred = this.style.stroke_width;
            pred_opacity = this.style.opacity;
            pred_stroke_color = this.style.stroke;
-           if (this.style.stroke != 'black'){
+           if (this.style.stroke != 'red'){
              d3.select(this)
                 .style('stroke', 'white')
                 .style('stroke-width', 1)
                 .style('opacity', 1.2);
            } else {
              d3.select(this)
-                .style('stroke', 'black')
+                .style('stroke', 'red')
                 .style('stroke-width', 1)
                 .style('opacity', 1.2);
            }
@@ -83,10 +76,12 @@ class MapChoropleth extends MapPlot {
 				  	})
           .on("mousemove", function(d) {
             var coordinates = d3.mouse(current_plot.svg.node());
-            current_plot.tooltip.classed('hidden', false)
-             .attr('style', 'left:' + (coordinates[0] + 20) + 'px; top:' + coordinates[1] + 'px')
-             .html("<strong>Country: </strong><span class='details'>" + d.properties.name + "<br></span>" + "<strong>Stringency Index: </strong><span class='details'>" + format(d.properties.date[dates[current_plot.date_ind]]) +"</span>");
-          })
+            if (d.properties.date != undefined) {
+              current_plot.tooltip.classed('hidden', false)
+               .attr('style', 'left:' + (coordinates[0] + 20) + 'px; top:' + coordinates[1] + 'px')
+               .html("<strong>Country: </strong><span class='details'>" + d.properties.name + "<br></span>" + "<strong>Stringency Index: </strong><span class='details'>" + format(d.properties.date[dates[current_plot.date_ind]]) +"</span>");
+             }
+            })
           .on("mouseout",function(d){
             current_plot.tooltip.classed('hidden', true);
   					d3.select(this).style('stroke-width', 1)
@@ -126,6 +121,7 @@ class MapChoropleth extends MapPlot {
 
 			this.drawData(countryShapes, dates[date_indice], date_indice);
 
+      // Zoom action
 			const zoom = d3.zoom()
 	 	 					       .scaleExtent([1, 8])
 	 	 					       .on('zoom', function() {
@@ -134,7 +130,8 @@ class MapChoropleth extends MapPlot {
 	 											current_plot.map_container.selectAll('path').attr("transform", d3.event.transform);
 	 	 								 });
 	 			this.svg.call(zoom);
-				this.makeLegend(this.map_container, [35, height*0.25], [width * 0.03, height * 0.5]);
+
+				this.makeLegend(this.svg, [35, height*0.25], [width * 0.03, height * 0.5]);
 		});
 	}
 
