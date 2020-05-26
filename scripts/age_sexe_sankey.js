@@ -117,3 +117,4 @@ function draw_sankey(country) {
 
 draw_sankey('Switzerland');
 draw_sankey('Thailand')
+draw_sankey('United Kingdom')
