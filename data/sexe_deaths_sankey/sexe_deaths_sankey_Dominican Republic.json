@@ -1,0 +1,1 @@
+{"nodes": [{"node": 0, "name": "Women"}, {"node": 1, "name": "Men"}, {"node": 2, "name": "Deaths"}, {"node": 3, "name": "Confirmed cases without death"}], "links": [{"source": 0, "target": 2, "value": 127}, {"source": 0, "target": 3, "value": 6307}, {"source": 1, "target": 2, "value": 328}, {"source": 1, "target": 3, "value": 7226}]}

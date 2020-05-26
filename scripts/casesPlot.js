@@ -27,9 +27,9 @@ var layout = {
           stepmode: 'backward'
         },
         {
-          count: 6,
-          label: '6m',
-          step: 'month',
+          count: 1,
+          label: '1w',
+          step: 'week',
           stepmode: 'backward'
         },
         {step: 'all'}

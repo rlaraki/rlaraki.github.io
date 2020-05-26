@@ -4,6 +4,26 @@
 		<title>Interactive Coronavirus Map</title>
 		<style type="text/css">
 			/* No style rules here yet */
+			.node rect {
+			  cursor: move;
+			  fill-opacity: .9;
+			  shape-rendering: crispEdges;
+			}
+
+			.node text {
+			  pointer-events: none;
+			  text-shadow: 0 1px 0 #fff;
+			}
+
+			.link {
+			  fill: none;
+			  stroke: #000;
+			  stroke-opacity: .2;
+			}
+
+			.link:hover {
+			  stroke-opacity: .5;
+			}
 		</style>
 		<link rel="stylesheet" type="text/css" href="style.css">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/britecharts/dist/css/britecharts.min.css"
@@ -40,7 +60,8 @@
 								 <span id="date-value"></span>
 					</label>
 				</div>
-				<div class='scaling-svg-container' id='map_container_svg'></div>
+				<div class='scaling-svg-container' id='map_container_svg'>
+				</div>
 				<style>
 				.point {
 						fill: rgb(255, 141, 82);
@@ -48,7 +69,7 @@
 					}
 				</style>
 			</div>
-			<div id='right_scroll_plot' class='right_scroll_plot'>
+			<div class='right_scroll_plot' id='right_scroll_plot'>
 			</div>
 	</div>
 		<script src="https://d3js.org/d3.v5.min.js"></script>
@@ -64,7 +85,8 @@
 		<script src='scripts/mapCases.js'></script>
 		<script src='scripts/mapRecovered.js'></script>
 		<script src='scripts/mapDeaths.js'></script>
-		<script src='scripts/barChart.js'></script>
+		<script src='scripts/sankey.js'></script>
 		<script src='scripts/casesPlot.js'></script>
+		<script src='scripts/age_sexe_sankey.js'></script>
 	</body>
 </html>
