@@ -28,7 +28,7 @@ var sankey = d3.sankey()
 var path = sankey.link();
 
 // load the data
-d3.json("../data/sankey.json").then(function(graph) {
+d3.json('../data/sexe_deaths_sankey/sexe_deaths_sankey_Thailand.json').then(function(graph) {
 
   sankey
       .nodes(graph.nodes)
