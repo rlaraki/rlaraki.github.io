@@ -99,7 +99,6 @@ class MapBubble extends MapPlot {
 
 				  	})
           .on("mouseout",function(d){
-            current_plot.tooltip.classed('hidden', true);
   					d3.select(this).style('stroke-width', 1)
               .style('opacity', pred_opacity)
               .style('stroke', pred_stroke_color);})
@@ -120,11 +119,6 @@ class MapBubble extends MapPlot {
               return 'red';
             }
           });
-
-
-
-
-
 
 			 d3.select("#slider")
  				.select("label")
@@ -207,7 +201,6 @@ class MapBubble extends MapPlot {
           .style('fill-opacity', 1);
       })
       .on("mousemove", function(d) {
-        current.tooltip.classed('hidden', false)
         var coordinates = d3.mouse(current.svg.node());
         current.tooltip.classed('hidden', false)
          .attr('style', 'left:' + (coordinates[0] + 20) + 'px; top:' + coordinates[1] + 'px')
