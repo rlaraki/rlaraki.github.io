@@ -167,12 +167,20 @@ class LinePlot {
 
         var xAxis = d3.axisBottom(xScale).ticks(7);
         var yAxis = d3.axisLeft(yScale).ticks(7);
+
         yAxis = g => g .attr("transform", `translate(${margin_linechart_left},0)`) .call(d3.axisLeft(yScale));
-/*
-        yAxis = g => g
-            .attr("transform", `translate(${margin_linechart},0)`)
-            .call(d3.axisLeft(yScale));
-*/
+
+
+        // Add a clipPath: everything out of this area won't be drawn.
+        var clip = d3.select('#firstG').append("defs").append("svg:clipPath")
+            .attr("id", "clip")
+            .append("svg:rect")
+            .attr("width", width_linechart - 4*margin_linechart )
+            .attr("height", height_linechart )
+            .attr("x", margin_linechart_left)
+            .attr("y", 0);
+
+
         /* Add line into SVG */
         var line = d3.line()
             .x(d => xScale(d.date))
@@ -180,10 +188,13 @@ class LinePlot {
 
         let lines = d3.select('#firstG').append('g')
             .attr('class', 'lines')
-            .attr('id', 'linesChart_lines');
+            .attr('id', 'linesChart_lines')
+            .attr('clip-path', "url(#clip)");
+
+        //
 
         //console.log('data for lines', data);
-        lines.selectAll('.line-group')
+        var lines_group = lines.selectAll('.line-group')
             .data(data).enter()
             .append('g')
             .attr('class', 'line-group')
@@ -226,7 +237,7 @@ class LinePlot {
 
 
         /* Add circles in the line */
-        lines.selectAll("circle-group")
+        var circles = lines.selectAll("circle-group")
             .data(data).enter()
             .append("g")
             .style("fill", (d, i) => color(i))
@@ -278,12 +289,13 @@ class LinePlot {
 
             });
 
-        d3.select('#firstG').append("g")
+
+        var x_axis = d3.select('#firstG').append("g")
             .attr("class", "x axis")
-            .attr("transform", `translate(0, ${height_linechart-margin_linechart})`)
+            .attr("transform", `translate(0, ${height_linechart - 2*margin_linechart})`)
             .call(xAxis);
 
-        d3.select('#firstG').append("g")
+        var y_axis = d3.select('#firstG').append("g")
             .attr("class", "y axis")
             .call(yAxis)
             .append('text')
@@ -291,5 +303,29 @@ class LinePlot {
             .attr("transform", "rotate(-90)")
             .attr("fill", "#000")
             .text("Total values");
+
+
+        // zoom actions
+  			const zoom = d3.zoom()
+  	 	 					       .scaleExtent([1, 12])
+  	 	 					       .on('zoom', function() {
+                          d3.event.transform.x = Math.min(0, Math.max(d3.event.transform.x, width_linechart - width_linechart * d3.event.transform.k));
+                          x_axis.transition().duration(50)
+                              .call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
+
+                          var new_xScale = d3.event.transform.rescaleX(xScale);
+                          circles.attr('cx', d => new_xScale(d.date));
+
+                          var new_line = d3.line()
+                              .x(d => new_xScale(d.date))
+                              .y(d => yScale(d.data));
+
+                          lines_group.attr('d', d => new_line(d.values));
+
+  	 	 								 });
+
+        this.svg.call(zoom);
+
     }
+
 }
