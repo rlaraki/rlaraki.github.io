@@ -173,6 +173,9 @@ whenDocumentLoaded(() => {
 	line_chart = new LinePlot("Confirmed cases");
 	line_chart.draw();
 
+	bar_chart = new BarPlot("Confirmed cases");
+	bar_chart.draw();
+
 	const cases_query = document.getElementById('cases');
 	cases_query.addEventListener('click', () => {
 		checkInstancesButton();
@@ -224,10 +227,10 @@ whenDocumentLoaded(() => {
 		checkInstancesButton();
 		plot_object = new MapMeasures(gov_measures);
 
-		line_chart = new LinePlot("measures");
+		//line_chart = new LinePlot("measures");
 
 		plot_object.draw();
-		line_chart.draw();
+		//line_chart.draw();
 		change = true;
 	});
 
