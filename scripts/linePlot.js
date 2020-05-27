@@ -6,6 +6,17 @@ class LinePlot {
         this.class_name = class_name;
         this.total_data = this.getData();
 
+        var plot_container = document.getElementById('right_scroll_plot'); 
+        this.height = 300;
+        this.width = plot_container.offsetWidth ;  
+        this.margin = 40;
+
+        this.svg = d3.select('div#right_scroll_plot').append("svg")
+        .attr('id', "line_chart")
+        .attr('preserveAspectRatio', 'xMinYMin meet') 
+        .attr("width", (this.width ) + "px")
+        .attr("height", (this.height) + "px")
+
     }
 
     getData() {
@@ -127,7 +138,7 @@ class LinePlot {
         });
 
         data.forEach((item) => {
-            var max_cases_per_country = d3.max(item.values, d => d.cases)
+            var max_cases_per_country = d3.max(item.values, d => d.data)
             max_cases_all_countries.push(max_cases_per_country)
         });
 
@@ -144,16 +155,17 @@ class LinePlot {
         var xAxis = d3.axisBottom(xScale).ticks(10);
         var yAxis = d3.axisLeft(yScale).ticks(10);
 
+/*
         yAxis = g => g
             .attr("transform", `translate(${margin_linechart},0)`)
             .call(d3.axisLeft(yScale));
-
+*/
         /* Add line into SVG */
         var line = d3.line()
             .x(d => xScale(d.date))
             .y(d => yScale(d.data));
 
-        let lines = this.svg.append('g')
+        let lines = d3.select('#firstG').append('g')
             .attr('class', 'lines')
             .attr('id', 'linesChart_lines');
 
@@ -245,12 +257,12 @@ class LinePlot {
 
             });
 
-        this.svg.append("g")
+        d3.select('#firstG').append("g")
             .attr("class", "x axis")
             .attr("transform", `translate(0, ${height_linechart-margin_linechart})`)
             .call(xAxis);
 
-        this.svg.append("g")
+        d3.select('#firstG').append("g")
             .attr("class", "y axis")
             .call(yAxis)
             .append('text')
