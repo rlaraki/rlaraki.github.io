@@ -139,18 +139,15 @@ function getData() {
 
 	}
 
-	function get_data_plots(){
-		var data = [];
+function checkInstancesButton() {
+	if (d3.select('#line_chart')) {
+		d3.select('#line_chart').remove();
+	}
+	var point = document.getElementById('point_svg');
+	if (point)
+		point.remove();
+}
 
-		var request = new XMLHttpRequest();
-		request.open('GET', '../data/general_data.json', false);
-		request.send(null)
-
-		var casesData = JSON.parse(request.responseText)
-
-
-		return casesData;
- }
 
 function whenDocumentLoaded(action) {
 	if (document.readyState === "loading") {
@@ -168,61 +165,69 @@ whenDocumentLoaded(() => {
 	const cdr = data[0];
 	const gov_measures = data[1];
 
+	// Initialize first page as cases
 	plot_object = new MapBubble(cdr);
 	plot_object.draw();
 	var change = false;
 
-	data_plots = get_data_plots();
-	line_chart = new LinePlot("Confirmed cases", data_plots);
+	line_chart = new LinePlot("Confirmed cases");
 	line_chart.draw();
 
 	const cases_query = document.getElementById('cases');
 	cases_query.addEventListener('click', () => {
-		var point = document.getElementById('point_svg');
-		if (point)
-			point.remove();
+		checkInstancesButton();
 		if (change) {
 			plot_object = new MapBubble(cdr);
 			change = false;
 		}
 		plot_object.class_name = "Confirmed cases";
+
+		line_chart = new LinePlot("Confirmed cases");
+
 		plot_object.draw();
+		line_chart.draw();
+
 	});
 
 	const recovered_query = document.getElementById('recovered');
 	recovered_query.addEventListener('click', () => {
-		var point = document.getElementById('point_svg');
-		if (point)
-			point.remove();
+		checkInstancesButton();
 		if (change) {
 			plot_object = new MapBubble(cdr);
 			change = false;
 		}
 		plot_object.class_name = "Recovered";
+
+		line_chart = new LinePlot("Recovered");
+
 		plot_object.draw();
+		line_chart.draw();
 	});
 
 	const deaths_query = document.getElementById('deaths');
 	deaths_query.addEventListener('click', () => {
-		var point = document.getElementById('point_svg');
-		if (point)
-			point.remove();
+		checkInstancesButton();
 		if (change) {
 			plot_object = new MapBubble(cdr);
 			change = false;
 		}
 		plot_object.class_name = "Deaths";
+		line_chart = new LinePlot("Deaths");
+
 		plot_object.draw();
+		line_chart.draw();
 	});
 
 
 	const measures_query = document.getElementById('measures');
 	measures_query.addEventListener('click', () => {
-		var point = document.getElementById('point_svg');
-		if (point)
-			point.remove();
+		checkInstancesButton();
 		plot_object = new MapMeasures(gov_measures);
+
+		line_chart = new LinePlot("measures");
+
 		plot_object.draw();
+		line_chart.draw();
 		change = true;
 	});
 
