@@ -3,7 +3,8 @@ class LinePlot {
 constructor(class_name, total_data){
 
   this.class_name = class_name;
-  this.total_data = total_data;
+  this.total_data = this.getData();
+
 
 
   var plot_container = document.getElementById('right_scroll_plot'); 
@@ -18,6 +19,23 @@ constructor(class_name, total_data){
   .attr("height", (this.height) + "px")
 
 
+}
+
+getData() {
+  var generalData;
+  if (this.class_name == 'Confirmed cases' | this.class_name == 'Recovered' | this.class_name == 'Deaths') {
+    var request = new XMLHttpRequest();
+    request.open('GET', '../data/general_data.json', false);
+    request.send(null);
+    generalData = JSON.parse(request.responseText);
+  }
+  else if (this.class_name == 'Testing') {
+    var request = new XMLHttpRequest();
+    request.open('GET', '../data/testing_data.json', false);
+    request.send(null);
+    generalData = JSON.parse(request.responseText);
+  }
+  return generalData;
 }
 
 concatData() {
