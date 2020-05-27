@@ -139,19 +139,18 @@ function getData() {
 
 	}
 
-function get_data_plots(){
-	var data = [];
+	function get_data_plots(){
+		var data = [];
 
-	var request = new XMLHttpRequest();
-	request.open('GET', '../data/general_data.json', false);
-	request.send(null)
+		var request = new XMLHttpRequest();
+		request.open('GET', '../data/general_data.json', false);
+		request.send(null)
 
-	var casesData = JSON.parse(request.responseText)
+		var casesData = JSON.parse(request.responseText)
 
-	data = [casesData['Switzerland'], casesData['France']];
 
-	return data;
-}
+		return casesData;
+ }
 
 function whenDocumentLoaded(action) {
 	if (document.readyState === "loading") {
@@ -173,13 +172,10 @@ whenDocumentLoaded(() => {
 	plot_object.draw();
 	var change = false;
 
-/*
-	console.log('before linechart');
-	const data_plot = get_data_plots();
-	line_chart = new MeasuresPlot("Confirmed cases", data_plot);
-	console.log('after linechart');
-	line_chart.draw(data_plot)
-*/
+	data_plots = get_data_plots();
+	line_chart = new LinePlot("Confirmed cases", data_plots);
+	line_chart.draw();
+
 	const cases_query = document.getElementById('cases');
 	cases_query.addEventListener('click', () => {
 		var point = document.getElementById('point_svg');
