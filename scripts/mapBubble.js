@@ -76,14 +76,14 @@ class MapBubble extends MapPlot {
 					 pred = this.style.stroke_width;
            pred_opacity = this.style.opacity;
            pred_stroke_color = this.style.stroke;
-           if (this.style.stroke != 'black'){
+           if (this.style.stroke != 'red'){
              d3.select(this)
                 .style('stroke', 'white')
                 .style('stroke-width', 1)
                 .style('opacity', 1.2);
            } else {
              d3.select(this)
-                .style('stroke', 'black')
+                .style('stroke', 'red')
                 .style('stroke-width', 1)
                 .style('opacity', 1.2);
            }
@@ -94,13 +94,24 @@ class MapBubble extends MapPlot {
               .style('opacity', pred_opacity)
               .style('stroke', pred_stroke_color);})
   				.on("click", function(d){
-  					if (this.style.stroke != 'black'){
-  					  d3.select(this).style('stroke', 'black')
+  					if (this.style.stroke != 'red'){
+              list_countries.push(d.properties.name)
+              d3.select("#line_chart")
+                .dispatch('click', {detail: d.properties.name});
+  					  d3.select(this).style('stroke', 'red')
                 .style('stroke-width', 1);
-  				} else {
-  					d3.select(this).style('stroke', null);
-  				}
-          pred_stroke_color = this.style.stroke;
+    				} else {
+              var p = list_countries.indexOf(d.properties.name)
+
+              if (p > -1) {
+                list_countries.splice(p, 1)
+              }
+              d3.select("#line_chart")
+                .dispatch('click', {detail: d.properties.name});
+              d3.select(this).style('stroke', null);
+    				}
+
+            pred_stroke_color = this.style.stroke;
   				})
 					.attr('fill', 'black')
 					.attr("d", path)
