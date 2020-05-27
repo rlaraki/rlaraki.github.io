@@ -1,4 +1,4 @@
-var list_countries = ['Switzerland', 'France']
+var list_countries = []
 
 class MapPlot {
 

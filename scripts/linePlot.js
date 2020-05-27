@@ -7,15 +7,19 @@ class LinePlot {
         this.total_data = this.getData();
 
         var plot_container = document.getElementById('right_scroll_plot'); 
-        this.height = 300;
-        this.width = plot_container.offsetWidth ;  
-        this.margin = 40;
+        this.margin = 20;
+        this.height = 350;
+        this.width = plot_container.offsetWidth;  
+
+        this.tool2 = d3.select(".right_scroll_plot")
+            .append('div')
+            .attr('class', 'hidden tool');
 
         this.svg = d3.select('div#right_scroll_plot').append("svg")
         .attr('id', "line_chart")
         .attr('preserveAspectRatio', 'xMinYMin meet') 
-        .attr("width", (this.width ) + "px")
-        .attr("height", (this.height) + "px")
+        .attr("width", (this.width + this.margin) + "px")
+        .attr("height", (this.height + this.margin) + "px")
 
     }
 
@@ -59,7 +63,7 @@ class LinePlot {
 
     draw() {
 
-        var data = [this.total_data['Switzerland'], this.total_data['France']];
+        var data = this.concatData();
 
         /* Add Axis into SVG */
         var color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -68,22 +72,19 @@ class LinePlot {
         var margin_linechart = this.margin;
         let current = this;
 
-
         /* Add SVG */
         this.svg
             .on("click", function(d) {
                 current.svg.selectAll('*').remove();
-
                 data = current.concatData();
-                current.update(data);
+                if (data.length > 0) {
+                    current.update(data);
+                }
             })
-            .attr("width", (width_linechart + margin_linechart) + "px")
-            .attr("height", (height_linechart + margin_linechart) + "px")
-            .append('g')
-            .attr("transform", `translate(${margin_linechart}, ${margin_linechart})`)
-            .attr('id', 'firstG');
 
-        this.update(data);
+        if (data.length > 0) {
+            this.update(data);
+        }
     }
 
     parseData(data) {
@@ -91,16 +92,21 @@ class LinePlot {
         var parseDate = d3.timeParse("%d-%m-%Y");
 
         data.forEach(function(d) {
+            d.country = d.name;
             d.values.forEach(function(d) {
                 d.date = parseDate(d.date);
                 if (current.class_name == "Confirmed cases") {
                     d.data = +d.cases;
+                    d.type = 'cases';
                 } else if (current.class_name == "Recovered") {
                     d.data = +d.recovered;
+                    d.type = 'recovered';
                 } else if (current.class_name == "Deaths") {
                     d.data = +d.deaths;
+                    d.type = 'deaths';
                 } else if (current.class_name == "Testing") {
                     d.data = +d.tests;
+                    d.type = 'tests';
                 }
             });
         });
@@ -110,6 +116,7 @@ class LinePlot {
     update(data) {
         //console.log('line_charts data first before parse', data);
         const duration = 250;
+        const margin_linechart_left = 60;
         var lineOpacity = "0.25";
         var lineOpacityHover = "0.85";
         var otherLinesOpacityHover = "0.1";
@@ -121,7 +128,13 @@ class LinePlot {
         var circleRadiusHover = 6;
         let current = this;
 
+
         data = this.parseData(data);
+
+        this.svg
+            .append('g')
+            .attr("transform", `translate(${margin_linechart}, ${margin_linechart})`)
+            .attr('id', 'firstG');
 
         //console.log('line_charts data first after parse', data);
         var height_linechart = this.height;
@@ -145,16 +158,16 @@ class LinePlot {
         /* Scale */
         var xScale = d3.scaleTime()
             .domain(d3.extent(max_min_date_all_countries))
-            .range([0, width_linechart - margin_linechart]);
+            .range([margin_linechart_left, width_linechart - margin_linechart]);
 
         var yScale = d3.scaleLinear()
             //.domain([0, d3.max(data, d => d.cases)])
             .domain([0, d3.max(max_cases_all_countries)])
-            .range([height_linechart - margin_linechart, 0]);
+            .range([height_linechart - 2*margin_linechart, 0]);
 
-        var xAxis = d3.axisBottom(xScale).ticks(10);
-        var yAxis = d3.axisLeft(yScale).ticks(10);
-
+        var xAxis = d3.axisBottom(xScale).ticks(7);
+        var yAxis = d3.axisLeft(yScale).ticks(7);
+        yAxis = g => g .attr("transform", `translate(${margin_linechart_left},0)`) .call(d3.axisLeft(yScale));
 /*
         yAxis = g => g
             .attr("transform", `translate(${margin_linechart},0)`)
@@ -180,8 +193,8 @@ class LinePlot {
                     .style("fill", color(i))
                     .text(d.name)
                     .attr("text-anchor", "middle")
-                    .attr("x", (width_linechart - margin_linechart) / 2)
-                    .attr("y", 5);
+                    .attr("x", (width_linechart) / 2)
+                    .attr("y", margin_linechart);
             })
             .on("mouseout", function(d) {
                 current.svg.select(".title-text").remove();
@@ -222,15 +235,23 @@ class LinePlot {
             .append("g")
             .attr("class", "circle")
             .on("mouseover", function(d) {
+                var coordinates = d3.mouse(d3.select('.scaling-svg-container').node());
+                console.log('linePlot on mouseOver circle d', d);
+                current.tool2.classed('hidden', false)
+                    .attr('style', 'left:' + (coordinates[0] -140) + 'px; top:' + coordinates[1] + 'px')
+                    .html("<strong>Country: </strong><span class='details'>" + d.country + "<br></span>" + "<strong>"+  d.type + ": </strong><span class='details'>" + format(d.data) +"</span>");
+
+
                 d3.select(this)
                     .style("cursor", "pointer")
                     .append("text")
                     .attr("class", "text")
-                    .text(`${d.data}`)
+                    .text(`${d.data} ${d.type} on ${d.date.toDateString()}`)
                     .attr("x", d => xScale(d.date) + 5)
                     .attr("y", d => yScale(d.data) - 10);
             })
             .on("mouseout", function(d) {
+                current.tool2.classed('hidden', true);
                 d3.select(this)
                     .style("cursor", "none")
                     .transition()
