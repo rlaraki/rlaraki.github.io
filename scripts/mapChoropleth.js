@@ -87,6 +87,7 @@ class MapChoropleth extends MapPlot {
   					d3.select(this).style('stroke-width', 1)
               .style('opacity', pred_opacity)
               .style('stroke', pred_stroke_color);})
+<<<<<<< HEAD
               .on("click", function(d){
       					if (this.style.stroke != 'red'){
                   list_countries.push(d.properties.name)
@@ -101,6 +102,22 @@ class MapChoropleth extends MapPlot {
       				  }
               pred_stroke_color = this.style.stroke;
       				})
+=======
+  				.on("click", function(d){
+  					if (this.style.stroke != 'red'){
+              list_countries.push(d.properties.name)
+              d3.select("#line_chart")
+                .dispatch('click', {detail: d.properties.name});
+  					  d3.select(this).style('stroke', 'red')
+                .style('stroke-width', 1);
+  				  } else {
+  			       d3.select(this).style('stroke', null);
+               var p = list_countries.indexOf(d.properties.name)
+               list_countries.splice(p, 1)
+  				  }
+          pred_stroke_color = this.style.stroke;
+  				})
+>>>>>>> master
           .attr('fill', 'black')
           .attr('opacity', 0.8)
 

@@ -93,7 +93,7 @@ class MapBubble extends MapPlot {
   					d3.select(this).style('stroke-width', 1)
               .style('opacity', pred_opacity)
               .style('stroke', pred_stroke_color);})
-  				.on("click", function(){
+  				.on("click", function(d){
   					if (this.style.stroke != 'black'){
   					  d3.select(this).style('stroke', 'black')
                 .style('stroke-width', 1);
