@@ -18,6 +18,7 @@ to
 
 /*
 Make the document fill the whole viewport, this overrides any weird defaults that browsers might have.
+background-image: url("https://cdn.wallpapersafari.com/62/8/A3hylQ.png");
 */
 html, body, figure {
 	width: 100%;
