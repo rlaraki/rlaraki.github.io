@@ -87,13 +87,18 @@ class MapChoropleth extends MapPlot {
   					d3.select(this).style('stroke-width', 1)
               .style('opacity', pred_opacity)
               .style('stroke', pred_stroke_color);})
-  				.on("click", function(){
+  				.on("click", function(d){
   					if (this.style.stroke != 'red'){
+              list_countries.push(d.properties.name)
+              d3.select("#line_chart")
+                .dispatch('click', {detail: d.properties.name});
   					  d3.select(this).style('stroke', 'red')
                 .style('stroke-width', 1);
-  				} else {
-  					d3.select(this).style('stroke', null);
-  				}
+  				  } else {
+  			       d3.select(this).style('stroke', null);
+               var p = list_countries.indexOf(d.properties.name)
+               list_countries.splice(p, 1)
+  				  }
           pred_stroke_color = this.style.stroke;
   				})
           .attr('fill', 'black')
