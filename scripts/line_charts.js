@@ -11,11 +11,11 @@ function add_data(item) {
   data = data.concat(casesData[item])
 }
 */
-data = [casesData['Switzerland'], casesData['France']];
+data = [casesData['France'], casesData['Switzerland']];
 
-var width = 420;
-var height = 300;
-var margin = 20;
+const width_linechart = 420;
+const height_linechart = 300;
+const margin_linechart = 20;
 var duration = 250;
 
 var lineOpacity = "0.25";
@@ -33,33 +33,43 @@ var circleRadiusHover = 6;
 /* Format Data */
 var parseDate = d3.timeParse("%d-%m-%Y");
 
-
 /* Add Axis into SVG */
 
 
 var color = d3.scaleOrdinal(d3.schemeCategory10);
 
 /* Add SVG */
-var svg = d3.select("div#right_scroll_plot").append("svg")
+var svg = d3.select("#right_scroll_plot").append("svg")
   .attr("id", 'line_chart')
   .on("click", function (d) {
+    svg.selectAll('*').remove();
+
+    var request = new XMLHttpRequest();
+    request.open('GET', '../data/general_data.json', false);
+    request.send(null)
+
+    var casesData = JSON.parse(request.responseText)
+
     data = []
     list_countries.forEach((item) => {
       data = data.concat(casesData[item])
     });
-    console.log('line charts list countries', list_countries);
-    console.log('line charts data', data);
-    draw()
-  })
-  .attr("width", (width+margin)+"px")
-  .attr("height", (height+margin)+"px")
-  .append('g')
-  .attr("transform", `translate(${margin}, ${margin})`);
+    //console.log('line charts list countries', list_countries);
+    //console.log('line charts data second', data);
 
+    draw();
+
+
+  })
+  .attr("width", (width_linechart + margin_linechart) + "px")
+  .attr("height", (height_linechart + margin_linechart) + "px")
+  .append('g')
+  .attr("transform", `translate(${margin_linechart}, ${margin_linechart})`)
+  .attr('id', 'firstG');
 
 
 function draw() {
-
+  //console.log('line_charts data first before parse', data);
   data.forEach(function(d) {
     d.values.forEach(function(d) {
       d.date = parseDate(d.date);
@@ -67,15 +77,16 @@ function draw() {
     });
   });
 
+  //console.log('line_charts data first after parse', data);
 
   /* Scale */
   var xScale = d3.scaleTime()
     .domain(d3.extent(data[0].values, d => d.date))
-    .range([0, width-margin]);
+    .range([0, width_linechart-margin_linechart]);
 
   var yScale = d3.scaleLinear()
     .domain([0, d3.max(data[0].values, d => d.cases)])
-    .range([height-margin, 0]);
+    .range([height_linechart-margin_linechart, 0]);
 
   var xAxis = d3.axisBottom(xScale).ticks(10);
   var yAxis = d3.axisLeft(yScale).ticks(10);
@@ -86,9 +97,10 @@ function draw() {
     .y(d => yScale(d.cases));
 
   let lines = svg.append('g')
-    .attr('class', 'lines');
+    .attr('class', 'lines')
+    .attr('id', 'linesChart_lines');
 
-
+  //console.log('data for lines', data);
   lines.selectAll('.line-group')
     .data(data).enter()
     .append('g')
@@ -99,7 +111,7 @@ function draw() {
           .style("fill", color(i))
           .text(d.name)
           .attr("text-anchor", "middle")
-          .attr("x", (width-margin)/2)
+          .attr("x", (width_linechart-margin_linechart)/2)
           .attr("y", 5);
       })
     .on("mouseout", function(d) {
@@ -117,7 +129,7 @@ function draw() {
   					.style('opacity', circleOpacityOnLineHover);
         d3.select(this)
           .style('opacity', lineOpacityHover)
-          .style("stroke-width", lineStrokeHover)
+          .style("stroke-width_linechart", lineStrokeHover)
           .style("cursor", "pointer");
       })
     .on("mouseout", function(d) {
@@ -126,7 +138,7 @@ function draw() {
         d3.selectAll('.circle')
   					.style('opacity', circleOpacity);
         d3.select(this)
-          .style("stroke-width", lineStroke)
+          .style("stroke-width_linechart", lineStroke)
           .style("cursor", "none");
       });
 
@@ -174,12 +186,9 @@ function draw() {
             .attr("r", circleRadius);
         });
 
-
-
-
   svg.append("g")
     .attr("class", "x axis")
-    .attr("transform", `translate(0, ${height-margin})`)
+    .attr("transform", `translate(0, ${height_linechart-margin_linechart})`)
     .call(xAxis);
 
   svg.append("g")
