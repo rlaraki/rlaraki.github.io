@@ -77,20 +77,27 @@ class MapChoropleth extends MapPlot {
           .on("mousemove", function(d) {
             var coordinates = d3.mouse(current_plot.svg.node());
             if (d.properties.date != undefined) {
-              current_plot.tooltip.classed('hidden', false)
+              console.log("should be printed");
+              current_plot.tool.classed('hidden', false)
                .attr('style', 'left:' + (coordinates[0] + 20) + 'px; top:' + coordinates[1] + 'px')
                .html("<strong>Country: </strong><span class='details'>" + d.properties.name + "<br></span>" + "<strong>Stringency Index: </strong><span class='details'>" + format(d.properties.date[dates[current_plot.date_ind]]) +"</span>");
              }
             })
           .on("mouseout",function(d){
-            current_plot.tooltip.classed('hidden', true);
+            current_plot.tool.classed('hidden', true);
   					d3.select(this).style('stroke-width', 1)
               .style('opacity', pred_opacity)
               .style('stroke', pred_stroke_color);})
-  				.on("click", function(){
+  				.on("click", function(d){
   					if (this.style.stroke != 'red'){
   					  d3.select(this).style('stroke', 'red')
                 .style('stroke-width', 1);
+                /*
+                var e = document.createEvent('Event');
+                  e.initEvent('click', true, true, e.detail = "haha");
+                d3.select("#line_chart").node().dispatchEvent(e);*/
+              d3.select("#line_chart").dispatch('click', {detail: d.properties.name});
+
   				} else {
   					d3.select(this).style('stroke', null);
   				}

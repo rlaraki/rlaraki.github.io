@@ -18,8 +18,8 @@ class MapPlot {
 	 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
 	 			return country_paths.features;
 	 		});
-		this.tooltip = d3.select('.scaling-svg-container').append('div')
-				.attr('class', 'hidden tooltip');
+		this.tool = d3.select('.scaling-svg-container').append('div')
+				.attr('class', 'hidden tool');
 
 	}
 	drawData(countryShapes, date, value, data, projection) {
@@ -52,57 +52,6 @@ function formatDate(input, formatInput, formatOutput){
 }
 
 function getData() {
-	const cases = d3.csv("data_website/map_cdr.csv").then((data) => {
-		let year_to_cases = {};
-		let dates = {};
-		let max = 0;
-
-		data.forEach((row) => {
-			if (row.confirmed > max) {
-				max = parseInt(row.confirmed);
-			}
-			var date = this.formatDate(row.Date, "%Y-%m-%d", "%B %d, %Y");
-			if (year_to_cases[date] == undefined) {
-				year_to_cases[date] = [];
-			}
-			else {
-				data = {};
-				data["lon"] =  row.longitude;
-				data["lat"] =  row.latitude;
-				data["data"] =  parseInt(row.confirmed);
-				year_to_cases[date].push(data);
-			}
-			dates[date] = date;
-		});
-		dates = d3.keys(dates).sort(function(a,b) { return new Date(a) - new Date(b); });
-		return [year_to_cases, dates, max];
-	});
-
-	const recovered = d3.csv("data_website/map_cdr.csv").then((data) => {
-		let year_to_recovered = {};
-		let dates = {};
-		let max = 0;
-
-		data.forEach((row) => {
-			if (row.recovered > max) {
-				max = parseInt(row.recovered);
-			}
-			var date = this.formatDate(row.Date, "%Y-%m-%d", "%B %d, %Y");
-			if (year_to_recovered[date] == undefined) {
-				year_to_recovered[date] = [];
-			}
-			else {
-				data = {};
-				data["lon"] =  row.longitude;
-				data["lat"] =  row.latitude;
-				data["data"] =  parseInt(row.recovered);
-				year_to_recovered[date].push(data);
-			}
-			dates[date] = date;
-		});
-		dates = d3.keys(dates).sort(function(a,b) { return new Date(a) - new Date(b); });
-		return [year_to_recovered, dates, max];
-	});
 
 	const cdr = d3.csv("data_website/map_cdr.csv").then((data) => {
 		let year_to_cases = {};
@@ -190,6 +139,19 @@ function getData() {
 
 	}
 
+function get_data_plots(){
+	var data = [];
+
+	var request = new XMLHttpRequest();
+	request.open('GET', '../data/general_data.json', false);
+	request.send(null)
+
+	var casesData = JSON.parse(request.responseText)
+
+	data = [casesData['Switzerland'], casesData['France']];
+
+	return data;
+}
 
 function whenDocumentLoaded(action) {
 	if (document.readyState === "loading") {
@@ -211,6 +173,13 @@ whenDocumentLoaded(() => {
 	plot_object.draw();
 	var change = false;
 
+/*
+	console.log('before linechart');
+	const data_plot = get_data_plots();
+	line_chart = new MeasuresPlot("Confirmed cases", data_plot);
+	console.log('after linechart');
+	line_chart.draw(data_plot)
+*/
 	const cases_query = document.getElementById('cases');
 	cases_query.addEventListener('click', () => {
 		var point = document.getElementById('point_svg');
