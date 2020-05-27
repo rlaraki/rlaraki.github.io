@@ -3,7 +3,7 @@ class LinePlot {
 constructor(class_name, total_data){
 
   this.class_name = class_name;
-  this.total_data = this.total_data;
+  this.total_data = total_data;
 
 
   var plot_container = document.getElementById('right_scroll_plot'); 
@@ -21,7 +21,7 @@ constructor(class_name, total_data){
 }
 
 concatData() {
-  data = []
+  var data = []
   if (this.class_name == 'Confirmed cases' | this.class_name == 'Recovered' | this.class_name == 'Deaths') {
     var request = new XMLHttpRequest();
     request.open('GET', '../data/general_data.json', false);
@@ -45,28 +45,29 @@ concatData() {
 
 draw(){
 
-var data = [this.total_data['Switzerland'], this.total_data['France']];
+  var data = [this.total_data['Switzerland'], this.total_data['France']];
 
-/* Add Axis into SVG */
-var color = d3.scaleOrdinal(d3.schemeCategory10);
-var height_linechart = this.height;
-var width_linechart = this.width;
-var margin_linechart = this.margin;
+  /* Add Axis into SVG */
+  var color = d3.scaleOrdinal(d3.schemeCategory10);
+  var height_linechart = this.height;
+  var width_linechart = this.width;
+  var margin_linechart = this.margin;
+  let current = this;
 
 
-/* Add SVG */
-this.svg
-  .on("click", function (d) {
-    svg.selectAll('*').remove();
+  /* Add SVG */
+  this.svg
+    .on("click", function (d) {
+      current.svg.selectAll('*').remove();
 
-    data = this.concatData();
-    this.update(data);
-  })
-  .attr("width", (width_linechart + margin_linechart) + "px")
-  .attr("height", (height_linechart + margin_linechart) + "px")
-  .append('g')
-  .attr("transform", `translate(${margin_linechart}, ${margin_linechart})`)
-  .attr('id', 'firstG');
+      data = current.concatData();
+      current.update(data);
+    })
+    .attr("width", (width_linechart + margin_linechart) + "px")
+    .attr("height", (height_linechart + margin_linechart) + "px")
+    .append('g')
+    .attr("transform", `translate(${margin_linechart}, ${margin_linechart})`)
+    .attr('id', 'firstG');
 
   this.update(data);
 }
