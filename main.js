@@ -1,54 +1,53 @@
-
-var list_countries = ['Switzerland','France']
+var list_countries = ['Switzerland', 'France']
 
 class MapPlot {
 
-	constructor() {
-		var map_container_svg = document.getElementById('map_container_svg'); 
-		const height = map_container_svg.offsetHeight; 
-		const width = map_container_svg.offsetWidth;  
-		var info;
-		this.svg = d3.select('div#map_container_svg')
-				.append('svg') 
-				.attr('preserveAspectRatio', 'xMinYMin meet') 
-				.attr('viewBox', '0 0 ' + width.toString(10) + ' ' + height.toString(10)) 
-				.classed('scaling-svg', true);
+    constructor() {
+    		var map_container_svg = document.getElementById('map_container_svg'); 
+        const height = map_container_svg.offsetHeight; 
+        const width = map_container_svg.offsetWidth;  
+        var info;
+        this.svg = d3.select('div#map_container_svg')
+            .append('svg') 
+            .attr('preserveAspectRatio', 'xMinYMin meet') 
+            .attr('viewBox', '0 0 ' + width.toString(10) + ' ' + height.toString(10)) 
+            .classed('scaling-svg', true);
 
-		this.map_promise = d3.json("data/countries.json").then((topojson_raw) => {
-	 			const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
-	 			return country_paths.features;
-	 		});
-		this.tool = d3.select('.scaling-svg-container').append('div')
-				.attr('class', 'hidden tool');
+        this.map_promise = d3.json("data/countries.json").then((topojson_raw) => {
+            const country_paths = topojson.feature(topojson_raw, topojson_raw.objects.countries);
+            return country_paths.features;
+        });
+        this.tool = d3.select('.scaling-svg-container').append('div')
+            .attr('class', 'hidden tool');
 
-	}
-	drawData(countryShapes, date, value, data, projection) {
-		throw new Error('Map plot class do not contain data and thus the map can not be drawn');
-	}
+    }
+    drawData(countryShapes, date, value, data, projection) {
+        throw new Error('Map plot class do not contain data and thus the map can not be drawn');
+    }
 
-	checkInstances() {
-		var g = document.getElementById('svg g');
-		if (g) g.remove();
+    checkInstances() {
+        var g = document.getElementById('svg g');
+        if (g) g.remove();
 
-		var s = document.getElementById('slider_id');
-		if (s) s.remove();
+        var s = document.getElementById('slider_id');
+        if (s) s.remove();
 
-		var c = document.getElementById('colorbar-area');
-		if (c) c.remove();
+        var c = document.getElementById('colorbar-area');
+        if (c) c.remove();
 
-    var colorbar = document.getElementById('colorbar');
-		if (colorbar) colorbar.remove();
+        var colorbar = document.getElementById('colorbar');
+        if (colorbar) colorbar.remove();
 
-    var point = document.getElementById('point_svg');
-    if (point)
-      point.remove();
-	}
+        var point = document.getElementById('point_svg');
+        if (point)
+            point.remove();
+    }
 }
 
-function formatDate(input, formatInput, formatOutput){
-	var dateParse = d3.timeParse("%Y-%m-%d");
-	var dateFormat = d3.timeFormat(formatOutput);
-	return dateFormat(dateParse(input));
+function formatDate(input, formatInput, formatOutput) {
+    var dateParse = d3.timeParse("%Y-%m-%d");
+    var dateFormat = d3.timeFormat(formatOutput);
+    return dateFormat(dateParse(input));
 }
 
 function getData() {
@@ -150,12 +149,12 @@ function checkInstancesButton() {
 
 
 function whenDocumentLoaded(action) {
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", action);
-	} else {
-		// `DOMContentLoaded` already fired
-		action();
-	}
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", action);
+    } else {
+        // `DOMContentLoaded` already fired
+        action();
+    }
 }
 
 
