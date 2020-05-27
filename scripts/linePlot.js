@@ -1,46 +1,39 @@
-var data = [];
+class LinePlot {
 
-var request = new XMLHttpRequest();
-request.open('GET', '../data/general_data.json', false);
-request.send(null)
+constructor(class_name, total_data){
 
-var casesData = JSON.parse(request.responseText)
-//list_countries.forEach(add_data);
-/*
-function add_data(item) {
-  data = data.concat(casesData[item])
+  this.class_name = class_name;
+  this.total_data = total_data;
+
+
+  var plot_container = document.getElementById('right_scroll_plot'); 
+  this.height = 300;
+  this.width = plot_container.offsetWidth ;  
+  this.margin = 40;
+
+  this.svg = d3.select('div#right_scroll_plot').append("svg")
+  .attr('id', "line_chart")
+  .attr('preserveAspectRatio', 'xMinYMin meet') 
+  .attr("width", (this.width ) + "px")
+  .attr("height", (this.height) + "px")
+
 }
-*/
-data = [casesData['France'], casesData['Switzerland']];
 
-const width_linechart = 420;
-const height_linechart = 300;
-const margin_linechart = 20;
-var duration = 250;
-
-var lineOpacity = "0.25";
-var lineOpacityHover = "0.85";
-var otherLinesOpacityHover = "0.1";
-var lineStroke = "1.5px";
-var lineStrokeHover = "2.5px";
-
-var circleOpacity = '0.85';
-var circleOpacityOnLineHover = "0.25"
-var circleRadius = 3;
-var circleRadiusHover = 6;
-
-
+draw(){
 /* Format Data */
 var parseDate = d3.timeParse("%d-%m-%Y");
 
 /* Add Axis into SVG */
 
+var data = [this.total_data['Switzerland'], this.total_data['France']];
 
 var color = d3.scaleOrdinal(d3.schemeCategory10);
+var height_linechart = this.height;
+var width_linechart = this.width;
+var margin_linechart = this.margin;
 
 /* Add SVG */
-var svg = d3.select("#right_scroll_plot").append("svg")
-  .attr("id", 'line_chart')
+this.svg
   .on("click", function (d) {
     svg.selectAll('*').remove();
 
@@ -49,17 +42,11 @@ var svg = d3.select("#right_scroll_plot").append("svg")
     request.send(null)
 
     var casesData = JSON.parse(request.responseText)
-
     data = []
     list_countries.forEach((item) => {
       data = data.concat(casesData[item])
     });
-    //console.log('line charts list countries', list_countries);
-    //console.log('line charts data second', data);
-
-    draw();
-
-
+    this.update(data);
   })
   .attr("width", (width_linechart + margin_linechart) + "px")
   .attr("height", (height_linechart + margin_linechart) + "px")
@@ -67,9 +54,24 @@ var svg = d3.select("#right_scroll_plot").append("svg")
   .attr("transform", `translate(${margin_linechart}, ${margin_linechart})`)
   .attr('id', 'firstG');
 
+this.update(data);
+}
 
-function draw() {
+ update(data) {
   //console.log('line_charts data first before parse', data);
+  const duration = 250;
+  var lineOpacity = "0.25";
+  var lineOpacityHover = "0.85";
+  var otherLinesOpacityHover = "0.1";
+  var lineStroke = "1.5px";
+  var lineStrokeHover = "2.5px";
+  var parseDate = d3.timeParse("%d-%m-%Y");
+  var circleOpacity = '0.85';
+  var circleOpacityOnLineHover = "0.25"
+  var circleRadius = 3;
+  var circleRadiusHover = 6;
+
+
   data.forEach(function(d) {
     d.values.forEach(function(d) {
       d.date = parseDate(d.date);
@@ -78,25 +80,31 @@ function draw() {
   });
 
   //console.log('line_charts data first after parse', data);
-
+  var height_linechart = this.height;
+  var width_linechart = this.width;
+  var margin_linechart = this.margin;
   /* Scale */
   var xScale = d3.scaleTime()
     .domain(d3.extent(data[0].values, d => d.date))
-    .range([0, width_linechart-margin_linechart]);
+    .range([margin_linechart, width_linechart-margin_linechart]);
 
   var yScale = d3.scaleLinear()
     .domain([0, d3.max(data[0].values, d => d.cases)])
     .range([height_linechart-margin_linechart, 0]);
 
+
+
   var xAxis = d3.axisBottom(xScale).ticks(10);
   var yAxis = d3.axisLeft(yScale).ticks(10);
+
+  yAxis = g => g .attr("transform", `translate(${margin_linechart},0)`) .call(d3.axisLeft(yScale));
 
   /* Add line into SVG */
   var line = d3.line()
     .x(d => xScale(d.date))
     .y(d => yScale(d.cases));
 
-  let lines = svg.append('g')
+  let lines = this.svg.append('g')
     .attr('class', 'lines')
     .attr('id', 'linesChart_lines');
 
@@ -106,7 +114,7 @@ function draw() {
     .append('g')
     .attr('class', 'line-group')
     .on("mouseover", function(d, i) {
-        svg.append("text")
+        this.svg.append("text")
           .attr("class", "title-text")
           .style("fill", color(i))
           .text(d.name)
@@ -115,7 +123,7 @@ function draw() {
           .attr("y", 5);
       })
     .on("mouseout", function(d) {
-        svg.select(".title-text").remove();
+        this.svg.select(".title-text").remove();
       })
     .append('path')
     .attr('class', 'line')
@@ -186,12 +194,12 @@ function draw() {
             .attr("r", circleRadius);
         });
 
-  svg.append("g")
+  this.svg.append("g")
     .attr("class", "x axis")
     .attr("transform", `translate(0, ${height_linechart-margin_linechart})`)
     .call(xAxis);
 
-  svg.append("g")
+  this.svg.append("g")
     .attr("class", "y axis")
     .call(yAxis)
     .append('text')
@@ -200,7 +208,5 @@ function draw() {
     .attr("fill", "#000")
     .text("Total values");
 
-
 }
-
-draw()
+}

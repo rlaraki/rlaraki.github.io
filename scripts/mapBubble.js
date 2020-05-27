@@ -45,6 +45,7 @@ class MapBubble extends MapPlot {
 		Promise.all([this.map_promise, this.data_promise]).then((results) => {
       var current_plot = this;
       var format = d3.format(",");
+      var zoom_tranform = undefined;
 
       // Data retrieved from the premises
 			let map_data = results[0];
@@ -92,7 +93,7 @@ class MapBubble extends MapPlot {
   					d3.select(this).style('stroke-width', 1)
               .style('opacity', pred_opacity)
               .style('stroke', pred_stroke_color);})
-  				.on("click", function(){
+  				.on("click", function(d){
   					if (this.style.stroke != 'black'){
   					  d3.select(this).style('stroke', 'black')
                 .style('stroke-width', 1);
@@ -130,11 +131,12 @@ class MapBubble extends MapPlot {
 						point.remove();
 					point_container = current_plot.svg.append("g").attr('id', 'point_svg');
           current_plot.date_ind = this.value;
-	 				current_plot.drawData(date, this.value, data, projection, point_container);
+	 				current_plot.drawData(date, this.value, data, projection, point_container, zoom_tranform);
+          point_container.selectAll('circle').attr("transform", zoom_tranform);
 	 			});
 
 			var point_container = this.svg.append("g").attr('id', 'point_svg');
-			this.drawData(dates[date_indice], date_indice, data, projection, point_container);
+			this.drawData(dates[date_indice], date_indice, data, projection, point_container, zoom_tranform);
 
       // zoom actions
 			const zoom = d3.zoom()
@@ -144,8 +146,7 @@ class MapBubble extends MapPlot {
 	 						   				d3.event.transform.y = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
 	 											current_plot.map_container.selectAll('path').attr("transform", d3.event.transform);
 												point_container.selectAll('circle').attr("transform", d3.event.transform);
-
-
+                        zoom_tranform = d3.event.transform;
 	 	 								 });
 	 			this.svg.call(zoom);
 
@@ -172,7 +173,7 @@ class MapBubble extends MapPlot {
 	}
 
 
-  drawData(date, value, data, projection, point_container) {
+  drawData(date, value, data, projection, point_container, zoom_tranform) {
     let current = this;
 
     this.point_scale = d3.scaleSqrt()
@@ -207,17 +208,15 @@ class MapBubble extends MapPlot {
       })
       .on("mousemove", function(d) {
         var coordinates = d3.mouse(current.svg.node());
-        current.tooltip.classed('hidden', false)
+        current.tool.classed('hidden', false)
          .attr('style', 'left:' + (coordinates[0] + 20) + 'px; top:' + coordinates[1] + 'px')
          .html("<strong>" + current.class_name + ": </strong><span class='details'>" + d["data"] +"</span>");
       })
       .on("mouseout",function(d){
-        current.tooltip.classed('hidden', true);
+        current.tool.classed('hidden', true);
         d3.select(this)
           .style('fill-opacity', 0.5);
-      })
-      .on("click", function(){
-        current.countryShapes.on("click")();
-      })
+      });
+
   }
 }
