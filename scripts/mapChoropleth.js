@@ -77,7 +77,6 @@ class MapChoropleth extends MapPlot {
           .on("mousemove", function(d) {
             var coordinates = d3.mouse(current_plot.svg.node());
             if (d.properties.date != undefined) {
-              console.log("should be printed");
               current_plot.tool.classed('hidden', false)
                .attr('style', 'left:' + (coordinates[0] + 20) + 'px; top:' + coordinates[1] + 'px')
                .html("<strong>Country: </strong><span class='details'>" + d.properties.name + "<br></span>" + "<strong>Stringency Index: </strong><span class='details'>" + format(d.properties.date[dates[current_plot.date_ind]]) +"</span>");
@@ -88,21 +87,20 @@ class MapChoropleth extends MapPlot {
   					d3.select(this).style('stroke-width', 1)
               .style('opacity', pred_opacity)
               .style('stroke', pred_stroke_color);})
-  				.on("click", function(d){
-  					if (this.style.stroke != 'red'){
-  					  d3.select(this).style('stroke', 'red')
-                .style('stroke-width', 1);
-                /*
-                var e = document.createEvent('Event');
-                  e.initEvent('click', true, true, e.detail = "haha");
-                d3.select("#line_chart").node().dispatchEvent(e);*/
-              d3.select("#line_chart").dispatch('click', {detail: d.properties.name});
-
-  				} else {
-  					d3.select(this).style('stroke', null);
-  				}
-          pred_stroke_color = this.style.stroke;
-  				})
+              .on("click", function(d){
+      					if (this.style.stroke != 'red'){
+                  list_countries.push(d.properties.name)
+                  d3.select("#line_chart")
+                    .dispatch('click', {detail: d.properties.name});
+      					  d3.select(this).style('stroke', 'red')
+                    .style('stroke-width', 1);
+      				  } else {
+      			       d3.select(this).style('stroke', null);
+                   var p = list_countries.indexOf(d.properties.name)
+                   list_countries.splice(p, 1)
+      				  }
+              pred_stroke_color = this.style.stroke;
+      				})
           .attr('fill', 'black')
           .attr('opacity', 0.8)
 
