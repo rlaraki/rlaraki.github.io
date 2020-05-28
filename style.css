@@ -26,7 +26,7 @@ html, body, figure {
 	padding: 0;
 	margin: 0;
 	border: 0;
-
+	background-image: url("https://cdn.wallpapersafari.com/62/8/A3hylQ.png");
 	background-size: cover;
 }
 
@@ -43,9 +43,19 @@ html, body, figure {
   float: left;
 }
 
+.axisWhite line{
+  stroke: #ccc;
+}
 
+.axisWhite path{
+  stroke: #ccc;
+}
+
+.axisWhite text{
+  fill: #ccc;
+}
 title {
-	color: #000;
+	color: white;
 }
 
 

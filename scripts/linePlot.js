@@ -169,6 +169,7 @@ class LinePlot {
 
         data = this.parseData(data);
 
+
         this.svg
             .append('g')
             .attr("transform", `translate(${margin_linechart}, ${margin_linechart})`)
@@ -225,6 +226,7 @@ class LinePlot {
         var line = d3.line()
             .x(d => xScale(d.date))
             .y(d => yScale(d.data));
+
 
         let lines = d3.select('#firstG').append('g')
             .attr('class', 'lines')
@@ -376,6 +378,7 @@ class LinePlot {
 
         var y_axis = d3.select('#firstG').append("g")
             .attr("class", "y axis")
+            .attr("class", "axisWhite")
             .call(yAxis)
             .append('text')
             .attr("y", 15)
