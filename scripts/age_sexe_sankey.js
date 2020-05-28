@@ -60,6 +60,7 @@ class Sankey {
             var svg = d3.select('#right_scroll_plot')
                 .append('div')
                 .classed('svg_container_sankey', true)
+                .attr('id', 'svg_cont_sankey')
                 .append("svg")
                 .classed('svg_sankey', true)
                 .attr('id', 'sankey_diagram')

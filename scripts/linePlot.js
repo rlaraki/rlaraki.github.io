@@ -102,7 +102,7 @@ class LinePlot {
           .selectAll("text")
           .append("text")
           .attr("x", (this.width / 2))
-          .attr("y", 0 - (this.margin / 2))
+          .attr("y", 0 )
           .attr("text-anchor", "middle")
           .style("font-size", "16px")
           .style("text-decoration", "underline")

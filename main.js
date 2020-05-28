@@ -156,11 +156,22 @@ function checkInstancesButton() {
         d3.select('#line_chart').remove();
     }
 
+    if (d3.selectAll('#bar_plot_cont')) {
+        d3.selectAll('#bar_plot_cont').remove();
+    }
+
     if (d3.selectAll('#sankey_diagram')) {
         d3.selectAll('#sankey_diagram').remove();
     }
+    if (d3.selectAll('#svg_cont_sankey')) {
+        d3.selectAll('#svg_cont_sankey').remove();
+    }
+
     if (d3.selectAll('#bar_chart')) {
         d3.selectAll('#bar_chart').remove();
+    }
+    if (d3.select('#line_chart_testing')) {
+        d3.select('#line_chart_testing').remove();
     }
 
     d3.select('#sankey_diagram_event').remove();
