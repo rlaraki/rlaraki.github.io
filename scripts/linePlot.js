@@ -1,9 +1,13 @@
+/*
+This class enables to create, using d3 library the
+*/
 class LinePlot {
 
     constructor(class_name) {
 
         this.class_name = class_name;
         this.total_data = this.getData();
+        this.id_name = this.getIDName();
 
         var plot_container = document.getElementById('right_scroll_plot');
 
@@ -12,18 +16,25 @@ class LinePlot {
         this.width = plot_container.offsetWidth;
 
 
-
         this.tool2 = d3.select(".right_scroll_plot")
             .append('div')
             .attr('class', 'hidden tool');
 
         this.svg = d3.select('div#right_scroll_plot').append("svg")
-            .attr('id', "line_chart")
+            .attr('id', this.id_name)
             .attr('preserveAspectRatio', 'xMinYMin meet')
             .attr("width", (this.width + this.margin) + "px")
             .attr("height", (this.height + this.margin) + "px")
 
+    }
 
+    getIDName() {
+      if (this.class_name == 'Testing') {
+        return "line_chart_testing";
+      }
+      else {
+        return "line_chart";
+      }
     }
 
     getData() {
@@ -87,7 +98,7 @@ class LinePlot {
         var margin_linechart = this.margin;
         let current = this;
 
-        d3.select("#firstG")
+        this.svg.select("#firstG")
           .selectAll("text")
           .append("text")
           .attr("x", (this.width / 2))
@@ -97,10 +108,10 @@ class LinePlot {
           .style("text-decoration", "underline")
           .text("Value vs Date Graph");
 
-
         /* Add SVG */
         this.svg
             .on("click", function(d) {
+                console.log("click event");
                 current.svg.selectAll('*').remove();
                 data = current.concatData();
 
@@ -112,8 +123,6 @@ class LinePlot {
         if (data.length > 0) {
             this.update(data);
         }
-
-
 
     }
 
@@ -191,14 +200,14 @@ class LinePlot {
             .attr('id', 'firstG')
 
 
-            d3.select('#firstG')
-                .append('text')
-                .attr("x", (this.width / 2))
-                .attr("y", (this.margin*0.8))
-                .attr("text-anchor", "middle")
-                .style("font-size", "16px")
-                .style("fill", "#ccc")
-                .text(this.class_name+" evolution over time");
+        this.svg.select('#firstG')
+            .append('text')
+            .attr("x", (this.width / 2))
+            .attr("y", (this.margin*0.8))
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("fill", "#ccc")
+            .text(this.class_name+" evolution over time");
 
         //console.log('line_charts data first after parse', data);
         var height_linechart = this.height;
@@ -238,7 +247,7 @@ class LinePlot {
 
 
         // Add a clipPath: everything out of this area won't be drawn.
-        var clip = d3.select('#firstG').append("defs").append("svg:clipPath")
+        var clip = this.svg.select('#firstG').append("defs").append("svg:clipPath")
             .attr("id", "clip")
             .append("svg:rect")
             .attr("width", width_linechart - 4 * margin_linechart)
@@ -253,7 +262,7 @@ class LinePlot {
             .y(d => yScale(d.data));
 
 
-        let lines = d3.select('#firstG').append('g')
+        let lines = this.svg.select('#firstG').append('g')
             .attr('class', 'lines')
             .attr('id', 'linesChart_lines')
             .attr('clip-path', "url(#clip)");
@@ -396,13 +405,13 @@ class LinePlot {
                 });
         }
 
-        var x_axis = d3.select('#firstG').append("g")
+        var x_axis = this.svg.select('#firstG').append("g")
             .attr("class", "x axis")
             .attr("class", "axisWhite")
             .attr("transform", `translate(0, ${height_linechart - 2*margin_linechart})`)
             .call(xAxis);
 
-        var y_axis = d3.select('#firstG').append("g")
+        var y_axis = this.svg.select('#firstG').append("g")
             .attr("class", "axisWhite")
             .call(yAxis)
             .append('text')
@@ -433,8 +442,6 @@ class LinePlot {
             });
 
         this.svg.call(zoom);
-
-
 
     }
 
