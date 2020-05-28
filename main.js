@@ -256,7 +256,6 @@ whenDocumentLoaded(() => {
 
 
     window.onresize = function() {
-        console.log("Resize")
         plot_object.draw(plot_object.date_ind);
     };
 

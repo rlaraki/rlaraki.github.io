@@ -17,11 +17,14 @@ class LinePlot {
             .append('div')
             .attr('class', 'hidden tool');
 
-        this.svg = d3.select('div#right_scroll_plot').append("svg")
+        this.svg = d3.select('div#right_scroll_plot')
+            .append('div')
+            .classed('svg_container_line_chart', true)
+            .append("svg")
             .attr('id', "line_chart")
+            .classed('svg_line_chart', true)
             .attr('preserveAspectRatio', 'xMinYMin meet')
-            .attr("width", (this.width + this.margin) + "px")
-            .attr("height", (this.height + this.margin) + "px");
+            .attr("viewBox", "0 0 " + (this.width + this.margin) + ' ' + (this.height + this.margin));
 
     }
 
@@ -369,6 +372,7 @@ class LinePlot {
                 });
         }
 
+
         var x_axis = d3.select('#firstG').append("g")
             .attr("class", "x axis")
             .attr("transform", `translate(0, ${height_linechart - 2*margin_linechart})`)
@@ -405,6 +409,13 @@ class LinePlot {
 
         this.svg.call(zoom);
 
+        d3.select('#firstG')
+            .append('text')
+            .attr("x", (this.width / 2))
+            .attr("y", (this.margin))
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .text("LinePlot");
     }
 
 }
