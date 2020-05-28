@@ -26,7 +26,7 @@ html, body, figure {
 	padding: 0;
 	margin: 0;
 	border: 0;
-	background-image: url("https://cdn.wallpapersafari.com/62/8/A3hylQ.png");
+	background-image: url("data/background_blue.png");
 	background-size: cover;
 }
 
@@ -198,11 +198,58 @@ div.tool {
 	font-family:"avenir next", Arial, sans-serif;
 	padding: 6px;
 	background: rgba(0, 0, 0, 0.6);
-	color: #FFA500;
+	color: orange;
 	border-radius: 1px;
 	position: absolute;
 }
 
 .details{
   color:white;
+}
+
+.svg_container_line_chart {
+	display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* aspect ratio */
+  vertical-align: top;
+  overflow: hidden;
+}
+
+.svg_line_chart {
+	display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.svg_container_sankey {
+	display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* aspect ratio */
+  vertical-align: top;
+  overflow: hidden;
+}
+
+.svg_sankey {
+	display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.svg_cont_barplot {
+	display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* aspect ratio */
+  vertical-align: top;
+  overflow: hidden;
+}
+
+.svg_barplot {
+	display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
