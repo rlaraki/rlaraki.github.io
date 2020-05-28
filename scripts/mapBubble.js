@@ -124,7 +124,8 @@ class MapBubble extends MapPlot {
 
 			 d3.select("#slider")
  				.select("label")
- 				.style("width", width*0.25);
+ 				.style("width", width*0.25)
+        .style("fill", "#ccc");
 
 			 d3.select("#slider")
 	 			.append("input")
@@ -163,7 +164,7 @@ class MapBubble extends MapPlot {
 
         // creates the legend for bubble map
         this.legend = this.map_container.append("g")
-          .attr("fill", "#777")
+          .attr("fill", "#ccc")
           .attr("transform", "translate(" + width * 0.05 + ', ' + height * 0.95 + ")")
           .attr("text-anchor", "middle")
           .style("font", "10px sans-serif")
@@ -172,7 +173,7 @@ class MapBubble extends MapPlot {
             .enter();
         this.legend.append("circle")
                 .attr("fill", "none")
-                .attr("stroke", "black")
+                .attr("stroke", "#ccc")
                 .attr("cy", d => -this.point_scale(d))
                 .attr("r", this.point_scale);
         this.legend.append("text")
@@ -183,16 +184,20 @@ class MapBubble extends MapPlot {
 		});
 	}
 
+  make_legend(){
+
+  }
+
 
   drawData(date, value, data, projection, point_container, zoom_tranform) {
     let current = this;
 
     this.point_scale = d3.scaleSqrt()
         .domain([0, this.max])
-        .range([0, 40]);
+        .range([0, document.getElementById('map_container_svg').offsetHeight*0.07]);
 
     d3.select("#date-value").text(date);
-    d3.select("#slider_id").property("value", value);
+    d3.select("#slider_id").property("value", value).attr("fill", "#ccc");;
 
     point_container.selectAll("circle")
       .data(data[date])

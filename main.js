@@ -9,7 +9,6 @@ class MapPlot {
         var info;
         this.svg = d3.select('div#map_container_svg')
             .append('svg') 
-            .attr('preserveAspectRatio', 'xMinYMin meet') 
             .attr('viewBox', '0 0 ' + width.toString(10) + ' ' + height.toString(10)) 
             .classed('scaling-svg', true);
 
@@ -51,6 +50,8 @@ function formatDate(input, formatInput, formatOutput) {
 }
 
 function getData() {
+
+
 
 	const cdr = d3.csv("data_website/map_cdr.csv").then((data) => {
 		let year_to_cases = {};
@@ -160,17 +161,21 @@ function whenDocumentLoaded(action) {
 
 whenDocumentLoaded(() => {
 
+
 	const data = getData();
-	const data_plots = get_data_plots()
+
 	const cdr = data[0];
 	const gov_measures = data[1];
 
 	// Initialize first page as cases
 	plot_object = new MapBubble(cdr);
+	var d = new Date();
+  var n = d.getTime();
 	plot_object.draw();
+	var d1 = new Date();
+  var n1 = d1.getTime();
+	console.log((n1-n))
 	plot_object.class_name = "Confirmed cases";
-	line_chart = new measures_plot("Confirmed cases",data)
-	line_chart.draw(data_plots)
 	var change = false;
 
 	line_chart = new LinePlot("Confirmed cases");
@@ -227,7 +232,7 @@ whenDocumentLoaded(() => {
 		checkInstancesButton();
 		plot_object = new MapMeasures(gov_measures);
 
-		line_chart = new LinePlot("measures");
+		line_chart = new LinePlot("Measures");
 
 		plot_object.draw();
 		line_chart.draw();

@@ -35,7 +35,12 @@ class LinePlot {
             request.open('GET', '../data/testing_data.json', false);
             request.send(null);
             generalData = JSON.parse(request.responseText);
-        }
+        } else if (this.class_name == 'Measures') {
+            var request = new XMLHttpRequest();
+            request.open('GET', '../data/measure_data.json', false);
+            request.send(null);
+            generalData = JSON.parse(request.responseText); }
+
         return generalData;
     }
 
@@ -57,7 +62,14 @@ class LinePlot {
             list_countries.forEach((item) => {
                 data = data.concat(generalData[item])
             });
-        }
+        } else if (this.class_name == 'Measures') {
+            var request = new XMLHttpRequest();
+            request.open('GET', '../data/measure_data.json', false);
+            request.send(null);
+            var generalData = JSON.parse(request.responseText);
+            list_countries.forEach((item) => {
+                data = data.concat(generalData[item])
+            }); }
         return data;
     }
 
@@ -107,6 +119,9 @@ class LinePlot {
                 } else if (current.class_name == "Testing") {
                     d.data = +d.tests;
                     d.type = 'tests';
+                } else if (current.class_name == "Measures") {
+                    d.data = +d.cases;
+                    d.measures = d.measure;
                 }
             });
         });
@@ -130,6 +145,7 @@ class LinePlot {
 
 
         data = this.parseData(data);
+
 
         this.svg
             .append('g')
@@ -177,6 +193,7 @@ class LinePlot {
         var line = d3.line()
             .x(d => xScale(d.date))
             .y(d => yScale(d.data));
+
 
         let lines = d3.select('#firstG').append('g')
             .attr('class', 'lines')
@@ -237,10 +254,17 @@ class LinePlot {
             .on("mouseover", function(d) {
                 var coordinates = d3.mouse(d3.select('.scaling-svg-container').node());
                 console.log('linePlot on mouseOver circle d', d);
+                if (current.class_name == "Measures"){
+                  current.tool2.classed('hidden', false)
+                      .attr('style', 'left:' + (coordinates[0] -140) + 'px; top:' + coordinates[1] + 'px')
+                      .html("<strong>Country: </strong><span class='details'>" + d.country + "<br></span>" + "<strong>"+  d.measures + ": </strong><span class='details'>" + format(d.data) +"</span>");
+
+                } else {
+
                 current.tool2.classed('hidden', false)
                     .attr('style', 'left:' + (coordinates[0] -140) + 'px; top:' + coordinates[1] + 'px')
                     .html("<strong>Country: </strong><span class='details'>" + d.country + "<br></span>" + "<strong>"+  d.type + ": </strong><span class='details'>" + format(d.data) +"</span>");
-
+                  }
 
                 d3.select(this)
                     .style("cursor", "pointer")
@@ -281,10 +305,12 @@ class LinePlot {
         d3.select('#firstG').append("g")
             .attr("class", "x axis")
             .attr("transform", `translate(0, ${height_linechart-margin_linechart})`)
+            .attr("class", "axisWhite")
             .call(xAxis);
 
         d3.select('#firstG').append("g")
             .attr("class", "y axis")
+            .attr("class", "axisWhite")
             .call(yAxis)
             .append('text')
             .attr("y", 15)
