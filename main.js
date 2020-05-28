@@ -158,6 +158,10 @@ function checkInstancesButton() {
     if (d3.selectAll('#sankey_diagram')) {
         d3.selectAll('#sankey_diagram').remove();
     }
+    if (d3.selectAll('#bar_chart')) {
+        d3.selectAll('#bar_chart').remove();
+    }
+
     d3.select('#sankey_diagram_event').remove();
     var point = document.getElementById('point_svg');
     if (point)
@@ -181,6 +185,9 @@ whenDocumentLoaded(() => {
     const cdr = data[0];
     const gov_measures = data[1];
 
+    bar_chart = new BarPlot("Confirmed cases");
+	  bar_chart.draw();
+
     // Initialize first page as cases
     plot_object = new MapBubble(cdr);
     plot_object.draw();
@@ -199,13 +206,14 @@ whenDocumentLoaded(() => {
             plot_object = new MapBubble(cdr);
             change = false;
         }
+        bar_chart = new BarPlot("Confirmed cases");
+        sankey_diagram = new Sankey();
+        line_chart = new LinePlot("Confirmed cases");
+
         plot_object.class_name = "Confirmed cases";
         plot_object.draw();
-
-        line_chart = new LinePlot("Confirmed cases");
+        bar_chart.draw();
         line_chart.draw();
-
-        sankey_diagram = new Sankey();
         sankey_diagram.draw_all_sankeys();
 
     });
@@ -217,11 +225,12 @@ whenDocumentLoaded(() => {
             plot_object = new MapBubble(cdr);
             change = false;
         }
-        plot_object.class_name = "Recovered";
-
+        bar_chart = new BarPlot("Recovered");
         line_chart = new LinePlot("Recovered");
 
+        plot_object.class_name = "Recovered";
         plot_object.draw();
+        bar_chart.draw();
         line_chart.draw();
     });
 
@@ -232,14 +241,17 @@ whenDocumentLoaded(() => {
             plot_object = new MapBubble(cdr);
             change = false;
         }
+
+        bar_chart = new BarPlot("Deaths");
+        sankey_diagram = new Sankey();
+        line_chart = new LinePlot("Deaths");
+
         plot_object.class_name = "Deaths";
         plot_object.draw();
-
-        line_chart = new LinePlot("Deaths");
+        bar_chart.draw();
+        sankey_diagram.draw_all_sankeys();
         line_chart.draw();
 
-        sankey_diagram = new Sankey();
-        sankey_diagram.draw_all_sankeys();
     });
 
 
@@ -247,10 +259,15 @@ whenDocumentLoaded(() => {
     measures_query.addEventListener('click', () => {
         checkInstancesButton();
         plot_object = new MapMeasures(gov_measures);
+        top_measures = new BarPlot("Measures");
 
-        line_chart = new LinePlot("Measures");
         plot_object.draw();
+        top_measures.draw();
+        line_tests = new LinePlot("Testing");
+        line_tests.draw();
+        line_chart = new LinePlot("Measures");
         line_chart.draw();
+
         change = true;
     });
 
