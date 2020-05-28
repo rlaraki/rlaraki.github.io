@@ -25,25 +25,25 @@ class BarPlot {
     var generalData;
     if (this.class_name == 'Confirmed cases') {
       var request = new XMLHttpRequest();
-      request.open('GET', '../data/top4_cases.json', false);
+      request.open('GET', '../data/top6_cases.json', false);
       request.send(null);
       generalData = JSON.parse(request.responseText);
     }
     else if (this.class_name == 'Recovered') {
       var request = new XMLHttpRequest();
-      request.open('GET', '../data/top_recovered.json', false);
+      request.open('GET', '../data/top6_recovered.json', false);
       request.send(null);
       generalData = JSON.parse(request.responseText);
     }
     if (this.class_name == 'Deaths') {
       var request = new XMLHttpRequest();
-      request.open('GET', '../data/top_deaths.json', false);
+      request.open('GET', '../data/top6_deaths.json', false);
       request.send(null);
       generalData = JSON.parse(request.responseText);
     }
-    else if (this.class_name == 'Testing') {
+    else if (this.class_name == 'Measures') {
       var request = new XMLHttpRequest();
-      request.open('GET', '../data/testing_data.json', false);
+      request.open('GET', '../data/top6_measures.json', false);
       request.send(null);
       generalData = JSON.parse(request.responseText);
     }
@@ -69,7 +69,6 @@ class BarPlot {
       .padding(0.3);
 
     // number of countries taken
-    var classes = 4;
     var yScale = d3.scaleLinear()
       .domain([0, this.total_data[0].value])
       .range([this.height-this.margin, 0]);
