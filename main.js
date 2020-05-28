@@ -155,6 +155,7 @@ function checkInstancesButton() {
     if (d3.select('#line_chart')) {
         d3.select('#line_chart').remove();
     }
+
     if (d3.selectAll('#sankey_diagram')) {
         d3.selectAll('#sankey_diagram').remove();
     }
@@ -266,8 +267,8 @@ whenDocumentLoaded(() => {
     measures_query.addEventListener('click', () => {
         checkInstancesButton();
         plot_object = new MapMeasures(gov_measures);
-
         line_chart = new LinePlot("Measures");
+        
         plot_object.draw();
         line_chart.draw();
         change = true;

@@ -57,10 +57,14 @@ class Sankey {
                 color = d3.scaleOrdinal(d3.schemeCategory10);
 
             // append the svg object to the body of the page
-            var svg = d3.select('#right_scroll_plot').append("svg")
-                .attr("width", this.width + this.margin.left + this.margin.right)
-                .attr("height", this.height + this.margin.top + this.margin.bottom)
+            var svg = d3.select('#right_scroll_plot')
+                .append('div')
+                .classed('svg_container_sankey', true)
+                .append("svg")
+                .classed('svg_sankey', true)
                 .attr('id', 'sankey_diagram')
+                .attr('preserveAspectRatio', 'xMinYMin meet')
+                .attr("viewBox", "0 0 " + (this.width + this.margin.left + this.margin.right) + ' ' + (this.height + this.margin.top + this.margin.bottom))
                 .append("g")
                 .attr("transform",
                     "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -149,7 +153,7 @@ class Sankey {
                         return d.name;
                     })
                     .filter(function(d) {
-                        return d.x < this.width / 2;
+                        return d.x < (current.width / 2);
                     })
                     .attr("x", 6 + sankey.nodeWidth())
                     .attr("text-anchor", "start");

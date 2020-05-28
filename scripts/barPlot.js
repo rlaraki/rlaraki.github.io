@@ -10,11 +10,14 @@ class BarPlot {
     this.width = plot_container.offsetWidth ;  
     this.margin = 58;
 
-    this.svg = d3.select('div#right_scroll_plot').append("svg")
+    this.svg = d3.select('div#right_scroll_plot')
+      .append("div")
+      .classed("svg_cont_barplot", true)
+      .append("svg")
+      .classed("svg_barplot", true)
       .attr('id', "bar_chart")
       .attr('preserveAspectRatio', 'xMinYMin meet') 
-      .attr("width", (this.width ) + "px")
-      .attr("height", (this.height) + "px")
+      .attr("viewBox", "0 0 " + (this.width) + ' ' + (this.height))
 
       this.tool = d3.select(".right_scroll_plot").append('div')
           .attr('class', 'hidden tool');
@@ -61,7 +64,7 @@ class BarPlot {
     this.svg
         .append('text')
         .attr("x", (this.width / 1.8))
-        .attr("y", (10))
+        .attr("y", (15))
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .style("fill", "#ccc")
@@ -74,11 +77,12 @@ class BarPlot {
 
     var yScale = d3.scaleLinear()
       .domain([0, this.total_data[0].value])
-      .range([this.height-this.margin, 0]);
+      .range([this.height-this.margin, 25]);
 
     var xAxis = g => g
       .attr("transform", `translate(0,${this.height-this.margin})`)
       .attr("class", "axisWhite")
+      .attr("id", "x_axis_bp")
       .call(d3.axisBottom(xScale).tickFormat(i => this.total_data[i].name).tickSizeOuter(0));
 
 

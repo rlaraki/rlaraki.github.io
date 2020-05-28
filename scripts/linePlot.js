@@ -17,11 +17,14 @@ class LinePlot {
             .append('div')
             .attr('class', 'hidden tool');
 
-        this.svg = d3.select('div#right_scroll_plot').append("svg")
-            .attr('id', "line_chart")
-            .attr('preserveAspectRatio', 'xMinYMin meet')
-            .attr("width", (this.width + this.margin) + "px")
-            .attr("height", (this.height + this.margin) + "px")
+        this.svg = d3.select('div#right_scroll_plot')
+                .append('div')
+                .classed('svg_container_line_chart', true)
+                .append("svg")
+                .attr('id', "line_chart")
+                .classed('svg_line_chart', true)
+                .attr('preserveAspectRatio', 'xMinYMin meet')
+                .attr("viewBox", "0 0 " + (this.width + this.margin) + ' ' + (this.height + this.margin));
 
 
     }
@@ -410,7 +413,7 @@ class LinePlot {
             .attr("x",(-20) )
             .attr("transform", "rotate(-90)")
             .attr("fill", "#000")
-            .text("Total values");
+            .text("Total number");
 
 
         // zoom actions

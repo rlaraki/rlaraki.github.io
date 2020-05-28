@@ -168,6 +168,7 @@ class MapChoropleth extends MapPlot {
         const colorbar_g = svg.append('g')
             .attr("id", "colorbar")
             .attr("transform", "translate(" + top_left[0] + ', ' + top_left[1] + ")")
+            .attr("class", "axisWhite")
             .call(colorbar_axis);
 
 
@@ -216,10 +217,10 @@ class MapChoropleth extends MapPlot {
                     if (d.properties.date[date] != undefined) {
                         return current_class.color_scale(d.properties.date[date]);
                     } else {
-                        return "#ccc";
+                        return "red";
                     }
                 } else {
-                    return "#ccc";
+                    return "#4c0000";
                 }
             })
             .style('stroke', function(d) {
