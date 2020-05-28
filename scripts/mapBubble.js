@@ -173,7 +173,7 @@ draw(date_indice = 0) {
         // creates the legend for bubble map
         this.legend = this.map_container.append("g")
             .attr("fill", "#ccc")
-            .attr("transform", "translate(" + width * 0.05 + ', ' + height * 0.95 + ")")
+            .attr("transform", "translate(" + width * 0.1 + ', ' + height * 0.95 + ")")
             .attr("text-anchor", "middle")
             .style("font", "10px sans-serif")
             .selectAll("circle")

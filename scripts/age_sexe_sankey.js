@@ -69,6 +69,7 @@ class Sankey {
                 .attr("x", (this.width / 2))
                 .attr("y", 0 - (this.margin.top / 10))
                 .attr("text-anchor", "middle")
+                .attr("fill", "#ccc")
                 .style("font-size", "16px")
                 .text("Ratio for Gender and Deaths for " + country);
 
