@@ -155,6 +155,10 @@ function checkInstancesButton() {
     if (d3.select('#line_chart')) {
         d3.select('#line_chart').remove();
     }
+    if (d3.selectAll('#sankey_diagram')) {
+        d3.selectAll('#sankey_diagram').remove();
+    }
+    d3.select('#sankey_diagram_event').remove();
     var point = document.getElementById('point_svg');
     if (point)
         point.remove();
@@ -185,6 +189,9 @@ whenDocumentLoaded(() => {
     line_chart = new LinePlot("Confirmed cases");
     line_chart.draw();
 
+    sankey_diagram = new Sankey();
+    sankey_diagram.draw_all_sankeys();
+
     const cases_query = document.getElementById('cases');
     cases_query.addEventListener('click', () => {
         checkInstancesButton();
@@ -193,11 +200,13 @@ whenDocumentLoaded(() => {
             change = false;
         }
         plot_object.class_name = "Confirmed cases";
+        plot_object.draw();
 
         line_chart = new LinePlot("Confirmed cases");
-
-        plot_object.draw();
         line_chart.draw();
+
+        sankey_diagram = new Sankey();
+        sankey_diagram.draw_all_sankeys();
 
     });
 
@@ -224,9 +233,13 @@ whenDocumentLoaded(() => {
             change = false;
         }
         plot_object.class_name = "Deaths";
-        line_chart = new LinePlot("Deaths");
         plot_object.draw();
+
+        line_chart = new LinePlot("Deaths");
         line_chart.draw();
+
+        sankey_diagram = new Sankey();
+        sankey_diagram.draw_all_sankeys();
     });
 
 

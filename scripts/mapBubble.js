@@ -99,6 +99,8 @@ class MapBubble extends MapPlot {
                             .dispatch('click', {
                                 detail: d.properties.name
                             });
+                        d3.selectAll('#sankey_diagram_event')
+                            .dispatch('dblclick');
                         d3.select(this).style('stroke', 'red')
                             .style('stroke-width', 1);
                     } else {
@@ -111,6 +113,8 @@ class MapBubble extends MapPlot {
                             .dispatch('click', {
                                 detail: d.properties.name
                             });
+                        d3.selectAll('#sankey_diagram_event')
+                            .dispatch('dblclick');
                         d3.select(this).style('stroke', null);
                     }
 

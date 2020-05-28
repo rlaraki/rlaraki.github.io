@@ -20,9 +20,8 @@ class LinePlot {
         this.svg = d3.select('div#right_scroll_plot').append("svg")
             .attr('id', "line_chart")
             .attr('preserveAspectRatio', 'xMinYMin meet')
-
             .attr("width", (this.width + this.margin) + "px")
-            .attr("height", (this.height + this.margin) + "px")
+            .attr("height", (this.height + this.margin) + "px");
 
     }
 
@@ -81,7 +80,6 @@ class LinePlot {
 
         var data = this.concatData();
 
-        /* Add Axis into SVG */
         var color = d3.scaleOrdinal(d3.schemeCategory10);
         var height_linechart = this.height;
         var width_linechart = this.width;
@@ -93,6 +91,7 @@ class LinePlot {
             .on("click", function(d) {
                 current.svg.selectAll('*').remove();
                 data = current.concatData();
+
                 if (data.length > 0) {
                     current.update(data);
                 }
@@ -165,6 +164,7 @@ class LinePlot {
         var circleRadius = 3;
         var circleRadiusHover = 6;
         let current = this;
+        var color = d3.scaleOrdinal(d3.schemeCategory10);
 
 
         data = this.parseData(data);
