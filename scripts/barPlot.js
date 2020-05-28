@@ -114,7 +114,9 @@ class BarPlot {
 
 
     this.svg.append("g")
-      .call(xAxis);
+      .call(xAxis)
+      .selectAll('text')
+      .attr('transform', 'translate(0,15)rotate(-45)');
 
     this.svg.append("g")
       .call(yAxis);

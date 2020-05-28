@@ -449,15 +449,17 @@ class LinePlot {
 
             });
 
-        this.svg.call(zoom);
+        this.svg.select('#firstG')
+            .append('svg:rect')
+            .attr("width", width_linechart - margin_linechart - margin_linechart_left)
+            .attr("height", height_linechart - 2*margin_linechart)
+            .attr('transform', `translate(${margin_linechart_left}, 0)`)
+            .style("visibility", "hidden")
+            .attr("pointer-events", "all")
+            .call(zoom);
 
-        d3.select('#firstG')
-            .append('text')
-            .attr("x", (this.width / 2))
-            .attr("y", (this.margin))
-            .attr("text-anchor", "middle")
-            .style("font-size", "16px")
-            .text("LinePlot");
+
+
     }
 
 }
