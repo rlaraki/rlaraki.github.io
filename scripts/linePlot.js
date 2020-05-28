@@ -1,25 +1,27 @@
-
 class LinePlot {
 
-    constructor(class_name, total_data) {
+    constructor(class_name) {
 
         this.class_name = class_name;
         this.total_data = this.getData();
 
-        var plot_container = document.getElementById('right_scroll_plot'); 
+        var plot_container = document.getElementById('right_scroll_plot');
+
         this.margin = 20;
         this.height = 350;
-        this.width = plot_container.offsetWidth;  
+        this.width = plot_container.offsetWidth;
+
+
 
         this.tool2 = d3.select(".right_scroll_plot")
             .append('div')
             .attr('class', 'hidden tool');
 
         this.svg = d3.select('div#right_scroll_plot').append("svg")
-        .attr('id', "line_chart")
-        .attr('preserveAspectRatio', 'xMinYMin meet') 
-        .attr("width", (this.width + this.margin) + "px")
-        .attr("height", (this.height + this.margin) + "px")
+            .attr('id', "line_chart")
+            .attr('preserveAspectRatio', 'xMinYMin meet')
+            .attr("width", (this.width + this.margin) + "px")
+            .attr("height", (this.height + this.margin) + "px");
 
     }
 
@@ -39,8 +41,8 @@ class LinePlot {
             var request = new XMLHttpRequest();
             request.open('GET', '../data/measure_data.json', false);
             request.send(null);
-            generalData = JSON.parse(request.responseText); }
-
+            generalData = JSON.parse(request.responseText);
+        }
         return generalData;
     }
 
@@ -69,7 +71,8 @@ class LinePlot {
             var generalData = JSON.parse(request.responseText);
             list_countries.forEach((item) => {
                 data = data.concat(generalData[item])
-            }); }
+            });
+        }
         return data;
     }
 
@@ -77,7 +80,6 @@ class LinePlot {
 
         var data = this.concatData();
 
-        /* Add Axis into SVG */
         var color = d3.scaleOrdinal(d3.schemeCategory10);
         var height_linechart = this.height;
         var width_linechart = this.width;
@@ -89,6 +91,7 @@ class LinePlot {
             .on("click", function(d) {
                 current.svg.selectAll('*').remove();
                 data = current.concatData();
+
                 if (data.length > 0) {
                     current.update(data);
                 }
@@ -102,28 +105,47 @@ class LinePlot {
     parseData(data) {
         let current = this;
         var parseDate = d3.timeParse("%d-%m-%Y");
+        var parseDate1 = d3.timeParse("%Y-%m-%d");
 
         data.forEach(function(d) {
-            d.country = d.name;
-            d.values.forEach(function(d) {
-                d.date = parseDate(d.date);
-                if (current.class_name == "Confirmed cases") {
+            var country = d.name;
+            if (current.class_name == "Measures") {
+                console.log('parse data for measures');
+                d.values.forEach(d => {
                     d.data = +d.cases;
-                    d.type = 'cases';
-                } else if (current.class_name == "Recovered") {
-                    d.data = +d.recovered;
-                    d.type = 'recovered';
-                } else if (current.class_name == "Deaths") {
-                    d.data = +d.deaths;
-                    d.type = 'deaths';
-                } else if (current.class_name == "Testing") {
-                    d.data = +d.tests;
-                    d.type = 'tests';
-                } else if (current.class_name == "Measures") {
+                    d.date = parseDate(d.date);
+
+                });
+
+                d.values1.forEach(d => {
                     d.data = +d.cases;
                     d.measures = d.measure;
-                }
-            });
+                    d.date = parseDate1(d.date);
+                    d.country = country;
+                });
+
+
+            } else {
+                d.values.forEach(d => {
+
+                    d.date = parseDate(d.date);
+                    d.country = country;
+
+                    if (current.class_name == "Confirmed cases") {
+                        d.data = +d.cases;
+                        d.type = 'Number of Cases';
+                    } else if (current.class_name == "Recovered") {
+                        d.data = +d.recovered;
+                        d.type = 'Number of Recovered';
+                    } else if (current.class_name == "Deaths") {
+                        d.data = +d.deaths;
+                        d.type = 'Number of Deaths';
+                    } else if (current.class_name == "Testing") {
+                        d.data = +d.tests;
+                        d.type = 'Number of Tests';
+                    }
+                });
+            }
         });
         return data;
     }
@@ -142,6 +164,7 @@ class LinePlot {
         var circleRadius = 3;
         var circleRadiusHover = 6;
         let current = this;
+        var color = d3.scaleOrdinal(d3.schemeCategory10);
 
 
         data = this.parseData(data);
@@ -179,16 +202,26 @@ class LinePlot {
         var yScale = d3.scaleLinear()
             //.domain([0, d3.max(data, d => d.cases)])
             .domain([0, d3.max(max_cases_all_countries)])
-            .range([height_linechart - 2*margin_linechart, 0]);
+            .range([height_linechart - 2 * margin_linechart, 0]);
 
         var xAxis = d3.axisBottom(xScale).ticks(7);
         var yAxis = d3.axisLeft(yScale).ticks(7);
-        yAxis = g => g .attr("transform", `translate(${margin_linechart_left},0)`) .call(d3.axisLeft(yScale));
-/*
+
         yAxis = g => g
-            .attr("transform", `translate(${margin_linechart},0)`)
+            .attr("transform", `translate(${margin_linechart_left},0)`)
             .call(d3.axisLeft(yScale));
-*/
+
+
+        // Add a clipPath: everything out of this area won't be drawn.
+        var clip = d3.select('#firstG').append("defs").append("svg:clipPath")
+            .attr("id", "clip")
+            .append("svg:rect")
+            .attr("width", width_linechart - 4 * margin_linechart)
+            .attr("height", height_linechart)
+            .attr("x", margin_linechart_left)
+            .attr("y", 0);
+
+
         /* Add line into SVG */
         var line = d3.line()
             .x(d => xScale(d.date))
@@ -197,10 +230,13 @@ class LinePlot {
 
         let lines = d3.select('#firstG').append('g')
             .attr('class', 'lines')
-            .attr('id', 'linesChart_lines');
+            .attr('id', 'linesChart_lines')
+            .attr('clip-path', "url(#clip)");
+
+        //
 
         //console.log('data for lines', data);
-        lines.selectAll('.line-group')
+        var lines_group = lines.selectAll('.line-group')
             .data(data).enter()
             .append('g')
             .attr('class', 'line-group')
@@ -242,73 +278,105 @@ class LinePlot {
             });
 
 
-        /* Add circles in the line */
-        lines.selectAll("circle-group")
-            .data(data).enter()
-            .append("g")
-            .style("fill", (d, i) => color(i))
-            .selectAll("circle")
-            .data(d => d.values).enter()
-            .append("g")
-            .attr("class", "circle")
-            .on("mouseover", function(d) {
-                var coordinates = d3.mouse(d3.select('.scaling-svg-container').node());
-                console.log('linePlot on mouseOver circle d', d);
-                if (current.class_name == "Measures"){
-                  current.tool2.classed('hidden', false)
-                      .attr('style', 'left:' + (coordinates[0] -140) + 'px; top:' + coordinates[1] + 'px')
-                      .html("<strong>Country: </strong><span class='details'>" + d.country + "<br></span>" + "<strong>"+  d.measures + ": </strong><span class='details'>" + format(d.data) +"</span>");
+        var circles;
+        if (this.class_name == 'Measures') {
+            /* Add circles in the line */
+            console.log('cirles measures data', data);
+            circles = lines.selectAll("circle-group")
+                .data(data).enter()
+                .append("g")
+                .style("fill", (d, i) => color(i))
+                .selectAll("circle")
+                .data(d => d.values1).enter()
+                .append("g")
+                .attr("class", "circle")
+                .on("mouseover", function(d) {
+                    console.log('circles measures d.values1', d);
+                    var coordinates = d3.mouse(d3.select('.scaling-svg-container').node());
+                    current.tool2.classed('hidden', false)
+                        .attr('style', 'left:' + (coordinates[0] - 140) + 'px; top:' + coordinates[1] + 'px')
+                        .html("<strong>Country: </strong><span class='details'>" + d.country + "<br></span>" +
+                            "<strong>Date: </strong><span class='details'>" + d.date.toDateString() + "<br></span>" +
+                            "<strong>Taken measures: </strong><span class='details'>" + d.measures + "</span>");
+                })
+                .on("mouseout", function(d) {
+                    current.tool2.classed('hidden', true);
+                    d3.select(this)
+                        .style("cursor", "none")
+                        .transition()
+                        .duration(duration)
+                        .selectAll(".text").remove();
+                })
+                .append("circle")
+                .attr("cx", d => xScale(d.date))
+                .attr("cy", d => yScale(d.data))
+                .attr("r", circleRadius)
+                .style('opacity', circleOpacity)
+                .on("mouseover", function(d) {
+                    d3.select(this)
+                        .transition()
+                        .duration(duration)
+                        .attr("r", circleRadiusHover);
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this)
+                        .transition()
+                        .duration(duration)
+                        .attr("r", circleRadius);
 
-                } else {
+                });
+        } else {
+            /* Add circles in the line */
+            circles = lines.selectAll("circle-group")
+                .data(data).enter()
+                .append("g")
+                .style("fill", (d, i) => color(i))
+                .selectAll("circle")
+                .data(d => d.values).enter()
+                .append("g")
+                .attr("class", "circle")
+                .on("mouseover", function(d) {
+                    var coordinates = d3.mouse(d3.select('.scaling-svg-container').node());
+                    current.tool2.classed('hidden', false)
+                        .attr('style', 'left:' + (coordinates[0] - 140) + 'px; top:' + coordinates[1] + 'px')
+                        .html("<strong>Country: </strong><span class='details'>" + d.country + "<br></span>" +
+                            "<strong>Date: </strong><span class='details'>" + d.date.toDateString() + "<br></span>" +
+                            "<strong>" + d.type + ": </strong><span class='details'>" + d.data + "</span>");
+                })
+                .on("mouseout", function(d) {
+                    current.tool2.classed('hidden', true);
+                    d3.select(this)
+                        .style("cursor", "none")
+                        .transition()
+                        .duration(duration)
+                        .selectAll(".text").remove();
+                })
+                .append("circle")
+                .attr("cx", d => xScale(d.date))
+                .attr("cy", d => yScale(d.data))
+                .attr("r", circleRadius)
+                .style('opacity', circleOpacity)
+                .on("mouseover", function(d) {
+                    d3.select(this)
+                        .transition()
+                        .duration(duration)
+                        .attr("r", circleRadiusHover);
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this)
+                        .transition()
+                        .duration(duration)
+                        .attr("r", circleRadius);
 
-                current.tool2.classed('hidden', false)
-                    .attr('style', 'left:' + (coordinates[0] -140) + 'px; top:' + coordinates[1] + 'px')
-                    .html("<strong>Country: </strong><span class='details'>" + d.country + "<br></span>" + "<strong>"+  d.type + ": </strong><span class='details'>" + format(d.data) +"</span>");
-                  }
+                });
+        }
 
-                d3.select(this)
-                    .style("cursor", "pointer")
-                    .append("text")
-                    .attr("class", "text")
-                    .text(`${d.data} ${d.type} on ${d.date.toDateString()}`)
-                    .attr("x", d => xScale(d.date) + 5)
-                    .attr("y", d => yScale(d.data) - 10);
-            })
-            .on("mouseout", function(d) {
-                current.tool2.classed('hidden', true);
-                d3.select(this)
-                    .style("cursor", "none")
-                    .transition()
-                    .duration(duration)
-                    .selectAll(".text").remove();
-            })
-            .append("circle")
-            .attr("cx", d => xScale(d.date))
-            .attr("cy", d => yScale(d.data))
-            .attr("r", circleRadius)
-            .style('opacity', circleOpacity)
-            .on("mouseover", function(d) {
-                d3.select(this)
-                    .transition()
-                    .duration(duration)
-                    .attr("r", circleRadiusHover);
-            })
-            .on("mouseout", function(d) {
-                d3.select(this)
-                    .transition()
-                    .duration(duration)
-                    .attr("r", circleRadius);
-
-
-            });
-
-        d3.select('#firstG').append("g")
+        var x_axis = d3.select('#firstG').append("g")
             .attr("class", "x axis")
-            .attr("transform", `translate(0, ${height_linechart-margin_linechart})`)
-            .attr("class", "axisWhite")
+            .attr("transform", `translate(0, ${height_linechart - 2*margin_linechart})`)
             .call(xAxis);
 
-        d3.select('#firstG').append("g")
+        var y_axis = d3.select('#firstG').append("g")
             .attr("class", "y axis")
             .attr("class", "axisWhite")
             .call(yAxis)
@@ -317,5 +385,29 @@ class LinePlot {
             .attr("transform", "rotate(-90)")
             .attr("fill", "#000")
             .text("Total values");
+
+
+        // zoom actions
+        const zoom = d3.zoom()
+            .scaleExtent([1, 12])
+            .on('zoom', function() {
+                d3.event.transform.x = Math.min(0, Math.max(d3.event.transform.x, width_linechart - width_linechart * d3.event.transform.k));
+                x_axis.transition().duration(50)
+                    .call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
+
+                var new_xScale = d3.event.transform.rescaleX(xScale);
+                circles.attr('cx', d => new_xScale(d.date));
+
+                var new_line = d3.line()
+                    .x(d => new_xScale(d.date))
+                    .y(d => yScale(d.data));
+
+                lines_group.attr('d', d => new_line(d.values));
+
+            });
+
+        this.svg.call(zoom);
+
     }
+
 }

@@ -1,20 +1,19 @@
 class MapBubble extends MapPlot {
 
-  constructor(data) {
-		super();
-    this.data_promise = data;
-    this.class_name = "Confirmed cases";
-	}
+    constructor(data) {
+        super();
+        this.data_promise = data;
+        this.class_name = "Confirmed cases";
+    }
 
-  filter_data(data) {
-    if (this.class_name == "Confirmed cases") {
-      return [data[0][0], data[0][1], data[3][0]];
-    }
-    else if (this.class_name == "Recovered") {
-      return [data[1][0], data[1][1], data[3][0]];
-    }
-    else {
-      return [data[2][0], data[2][1], data[3][0]];
+    filter_data(data) {
+        if (this.class_name == "Confirmed cases") {
+            return [data[0][0], data[0][1], data[3][0]];
+        } else if (this.class_name == "Recovered") {
+            return [data[1][0], data[1][1], data[3][0]];
+        } else {
+            return [data[2][0], data[2][1], data[3][0]];
+        }
     }
   }
 
@@ -94,22 +93,30 @@ class MapBubble extends MapPlot {
               .style('opacity', pred_opacity)
               .style('stroke', pred_stroke_color);})
   				.on("click", function(d){
-  					if (this.style.stroke != 'red'){
-              list_countries.push(d.properties.name)
-              d3.select("#line_chart")
-                .dispatch('click', {detail: d.properties.name});
-  					  d3.select(this).style('stroke', 'red')
-                .style('stroke-width', 1);
-    				} else {
-              var p = list_countries.indexOf(d.properties.name)
+                    if (this.style.stroke != 'red') {
+                        list_countries.push(d.properties.name)
+                        d3.select("#line_chart")
+                            .dispatch('click', {
+                                detail: d.properties.name
+                            });
+                        d3.selectAll('#sankey_diagram_event')
+                            .dispatch('dblclick');
+                        d3.select(this).style('stroke', 'red')
+                            .style('stroke-width', 1);
+                    } else {
+                        var p = list_countries.indexOf(d.properties.name)
 
-              if (p > -1) {
-                list_countries.splice(p, 1)
-              }
-              d3.select("#line_chart")
-                .dispatch('click', {detail: d.properties.name});
-              d3.select(this).style('stroke', null);
-    				}
+                        if (p > -1) {
+                            list_countries.splice(p, 1)
+                        }
+                        d3.select("#line_chart")
+                            .dispatch('click', {
+                                detail: d.properties.name
+                            });
+                        d3.selectAll('#sankey_diagram_event')
+                            .dispatch('dblclick');
+                        d3.select(this).style('stroke', null);
+                    }
 
             pred_stroke_color = this.style.stroke;
   				})
@@ -184,9 +191,7 @@ class MapBubble extends MapPlot {
 		});
 	}
 
-  make_legend(){
 
-  }
 
 
   drawData(date, value, data, projection, point_container, zoom_tranform) {
