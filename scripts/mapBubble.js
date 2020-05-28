@@ -15,7 +15,7 @@ class MapBubble extends MapPlot {
             return [data[2][0], data[2][1], data[3][0]];
         }
     }
-}
+
 
 draw(date_indice = 0) {
 
@@ -239,4 +239,5 @@ drawData(date, value, data, projection, point_container, zoom_tranform) {
         });
 
 }
+
 }
