@@ -208,17 +208,13 @@ whenDocumentLoaded(() => {
             change = false;
         }
         bar_chart = new BarPlot("Confirmed cases");
-        bar_chart.draw();
+        sankey_diagram = new Sankey();
+        line_chart = new LinePlot("Confirmed cases");
 
         plot_object.class_name = "Confirmed cases";
         plot_object.draw();
-
-        line_chart = new LinePlot("Confirmed cases");
+        bar_chart.draw();
         line_chart.draw();
-
-
-
-        sankey_diagram = new Sankey();
         sankey_diagram.draw_all_sankeys();
 
     });
@@ -226,40 +222,37 @@ whenDocumentLoaded(() => {
     const recovered_query = document.getElementById('recovered');
     recovered_query.addEventListener('click', () => {
         checkInstancesButton();
-
-        bar_chart = new BarPlot("Recovered");
-        bar_chart.draw();
-
         if (change) {
             plot_object = new MapBubble(cdr);
             change = false;
         }
-        plot_object.class_name = "Recovered";
-
+        bar_chart = new BarPlot("Recovered");
         line_chart = new LinePlot("Recovered");
 
+        plot_object.class_name = "Recovered";
         plot_object.draw();
+        bar_chart.draw();
         line_chart.draw();
     });
 
     const deaths_query = document.getElementById('deaths');
     deaths_query.addEventListener('click', () => {
         checkInstancesButton();
-        bar_chart = new BarPlot("Deaths");
-        bar_chart.draw();
-
         if (change) {
             plot_object = new MapBubble(cdr);
             change = false;
         }
+
+        bar_chart = new BarPlot("Deaths");
+        sankey_diagram = new Sankey();
+        line_chart = new LinePlot("Deaths");
+
         plot_object.class_name = "Deaths";
         plot_object.draw();
-
-        line_chart = new LinePlot("Deaths");
+        bar_chart.draw();
+        sankey_diagram.draw_all_sankeys();
         line_chart.draw();
 
-        sankey_diagram = new Sankey();
-        sankey_diagram.draw_all_sankeys();
     });
 
 
@@ -267,10 +260,15 @@ whenDocumentLoaded(() => {
     measures_query.addEventListener('click', () => {
         checkInstancesButton();
         plot_object = new MapMeasures(gov_measures);
-        line_chart = new LinePlot("Measures");
-        
+        top_measures = new BarPlot("Measures");
+
         plot_object.draw();
+        top_measures.draw();
+        line_tests = new LinePlot("Testing");
+        line_tests.draw();
+        line_chart = new LinePlot("Measures");
         line_chart.draw();
+
         change = true;
     });
 

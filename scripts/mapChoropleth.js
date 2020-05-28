@@ -1,10 +1,22 @@
+/*
+This class enables to create a choropleth map
+*/
 class MapChoropleth extends MapPlot {
-
+    /*
+    Constructor Initializes the date_ind number to 0
+    */
     constructor() {
         super();
         this.date_ind = 0;
     }
 
+    /**
+   * This function draw the entire map as well as all the features.
+   * Calling this function regenerate every time a new map and is usefull when the user does a resize of the screen
+   *
+   * @param {number} date_indice The value of the index of the date array when the user is doing a resize.
+   * Default is 0 since at the first call, we start from the first date
+   */
     draw(date_indice = 0) {
 
         var map_container_svg = document.getElementById('map_container_svg')
@@ -95,6 +107,10 @@ class MapChoropleth extends MapPlot {
                             .dispatch('click', {
                                 detail: d.properties.name
                             });
+                        d3.select("#line_chart_testing")
+                            .dispatch('click', {
+                                detail: d.properties.name
+                            });
                         d3.select(this).style('stroke', 'red')
                             .style('stroke-width', 1);
                     } else {
@@ -104,6 +120,10 @@ class MapChoropleth extends MapPlot {
                             list_countries.splice(p, 1)
                         }
                         d3.select("#line_chart")
+                            .dispatch('click', {
+                                detail: d.properties.name
+                            });
+                        d3.select("#line_chart_testing")
                             .dispatch('click', {
                                 detail: d.properties.name
                             });
@@ -150,6 +170,13 @@ class MapChoropleth extends MapPlot {
         });
     }
 
+    /**
+   *
+   * @param {container} svg The svg containing the map
+   * @param {number} top_left The top left position of the legend that will be created
+   * @param {number} colorbar_size Size of the legend
+   * @param {scaleClass} scaleClass Class of the scale used
+   */
     makeLegend(svg, top_left, colorbar_size, scaleClass = d3.scaleLinear) {
 
         const value_to_svg = scaleClass()
@@ -206,6 +233,12 @@ class MapChoropleth extends MapPlot {
             .style('opacity', 0.8);
     }
 
+    /**
+   *
+   * @param {container} countryShapes Represents the elements contained in the map_container
+   * @param {Array} date The date at which we want to draw the data
+   * @param {number} value The indice of the date at which we want to draw the data
+   */
     drawData(countryShapes, date, value) {
 
         const current_class = this;
