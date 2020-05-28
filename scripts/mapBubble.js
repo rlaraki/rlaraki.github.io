@@ -177,15 +177,32 @@ class MapBubble extends MapPlot {
 
 
           // zoom actions
+          var zoom_up_threshold = 2;
+          var zoom_down_threshold = 1;
           const zoom = d3.zoom()
               .scaleExtent([1, 8])
               .on('zoom', function() {
                   d3.event.transform.x = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
                   d3.event.transform.y = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
                   current_plot.map_container.selectAll('path').attr("transform", d3.event.transform);
-                  point_container.selectAll('circle')
-                    .attr("transform", d3.event.transform).transition()
-                    .attr("r", (d) => current_plot.point_scale(d.data)/d3.event.transform['k']).duration(300);
+
+                  if (d3.event.transform['k'] >= zoom_up_threshold) {
+                    point_container.selectAll('circle')
+                      .attr("transform", d3.event.transform).transition()
+                      .attr("r", (d) => current_plot.point_scale(d.data)/d3.event.transform['k']).duration(0);
+                      zoom_up_threshold += 1;
+                      zoom_down_threshold += 1;
+                  }
+                  else if (d3.event.transform['k'] <= zoom_down_threshold) {
+                    point_container.selectAll('circle')
+                      .attr("transform", d3.event.transform).transition()
+                      .attr("r", (d) => current_plot.point_scale(d.data)/d3.event.transform['k']).duration(0);
+                      zoom_up_threshold -= 1;
+                      zoom_down_threshold -= 1;
+                  }
+                  else {
+                    point_container.selectAll('circle').attr("transform", d3.event.transform)
+                  }
                   zoom_tranform = d3.event.transform;
 
               });
