@@ -108,7 +108,7 @@ class LinePlot {
           .selectAll("text")
           .append("text")
           .attr("x", (this.width / 2))
-          .attr("y", 0 - (this.margin / 2))
+          .attr("y", 0 )
           .attr("text-anchor", "middle")
           .style("font-size", "16px")
           .style("text-decoration", "underline")
@@ -427,7 +427,7 @@ class LinePlot {
             .attr("x",(-20) )
             .attr("transform", "rotate(-90)")
             .attr("fill", "#000")
-            .text("Total values");
+            .text("Total number");
 
 
         // zoom actions

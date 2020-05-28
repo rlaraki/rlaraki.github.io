@@ -8,13 +8,17 @@ class BarPlot {
     var plot_container = document.getElementById('right_scroll_plot'); 
     this.height = 300;
     this.width = plot_container.offsetWidth ;  
-    this.margin = 100;
+    this.margin = 60;
 
-    this.svg = d3.select('div#right_scroll_plot').append("svg")
+    this.svg = d3.select('div#right_scroll_plot')
+      .append("div")
+      .classed("svg_cont_barplot", true)
+      .attr("id", "bar_plot_cont")
+      .append("svg")
+      .classed("svg_barplot", true)
       .attr('id', "bar_chart")
       .attr('preserveAspectRatio', 'xMinYMin meet') 
-      .attr("width", (this.width ) + "px")
-      .attr("height", (this.height) + "px")
+      .attr("viewBox", "0 -30 " + (this.width) + ' ' + (this.height))
 
       this.tool = d3.select(".right_scroll_plot").append('div')
           .attr('class', 'hidden tool');
@@ -75,11 +79,13 @@ class BarPlot {
 
     var xAxis = g => g
       .attr("transform", `translate(0,${this.height-this.margin})`)
+      .attr("class", "axisWhite")
       .call(d3.axisBottom(xScale).tickFormat(i => this.total_data[i].name).tickSizeOuter(0));
 
 
     var yAxis = g => g
       .attr("transform", `translate(${this.margin},0)`)
+      .attr("class", "axisWhite")
       .call(d3.axisLeft(yScale).ticks(null, this.total_data.format))
       .call(g => g.select(".domain").remove())
       .call(g => g.append("text")
@@ -87,7 +93,7 @@ class BarPlot {
           .attr("y", 10)
           .attr("fill", "currentColor")
           .attr("text-anchor", "start")
-          .text(this.total_data.y))
+          .text(this.total_data.y));
 
     this.svg.append("g")
       .attr("fill", "#ccc")
