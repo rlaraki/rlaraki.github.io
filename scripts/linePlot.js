@@ -21,7 +21,8 @@ class LinePlot {
             .attr('id', "line_chart")
             .attr('preserveAspectRatio', 'xMinYMin meet')
             .attr("width", (this.width + this.margin) + "px")
-            .attr("height", (this.height + this.margin) + "px");
+            .attr("height", (this.height + this.margin) + "px")
+
 
     }
 
@@ -86,6 +87,17 @@ class LinePlot {
         var margin_linechart = this.margin;
         let current = this;
 
+        d3.select("#firstG")
+          .selectAll("text")
+          .append("text")
+          .attr("x", (this.width / 2))
+          .attr("y", 0 - (this.margin / 2))
+          .attr("text-anchor", "middle")
+          .style("font-size", "16px")
+          .style("text-decoration", "underline")
+          .text("Value vs Date Graph");
+
+
         /* Add SVG */
         this.svg
             .on("click", function(d) {
@@ -100,6 +112,9 @@ class LinePlot {
         if (data.length > 0) {
             this.update(data);
         }
+
+
+
     }
 
     parseData(data) {
@@ -173,7 +188,17 @@ class LinePlot {
         this.svg
             .append('g')
             .attr("transform", `translate(${margin_linechart}, ${margin_linechart})`)
-            .attr('id', 'firstG');
+            .attr('id', 'firstG')
+
+
+            d3.select('#firstG')
+                .append('text')
+                .attr("x", (this.width / 2))
+                .attr("y", (this.margin*0.8))
+                .attr("text-anchor", "middle")
+                .style("font-size", "16px")
+                .style("fill", "#ccc")
+                .text(this.class_name+" evolution over time");
 
         //console.log('line_charts data first after parse', data);
         var height_linechart = this.height;
@@ -202,7 +227,7 @@ class LinePlot {
         var yScale = d3.scaleLinear()
             //.domain([0, d3.max(data, d => d.cases)])
             .domain([0, d3.max(max_cases_all_countries)])
-            .range([height_linechart - 2 * margin_linechart, 0]);
+            .range([height_linechart - 2 * margin_linechart, margin_linechart*1.3]);
 
         var xAxis = d3.axisBottom(xScale).ticks(7);
         var yAxis = d3.axisLeft(yScale).ticks(7);
@@ -217,7 +242,7 @@ class LinePlot {
             .attr("id", "clip")
             .append("svg:rect")
             .attr("width", width_linechart - 4 * margin_linechart)
-            .attr("height", height_linechart)
+            .attr("height", height_linechart+margin_linechart)
             .attr("x", margin_linechart_left)
             .attr("y", 0);
 
@@ -373,15 +398,16 @@ class LinePlot {
 
         var x_axis = d3.select('#firstG').append("g")
             .attr("class", "x axis")
+            .attr("class", "axisWhite")
             .attr("transform", `translate(0, ${height_linechart - 2*margin_linechart})`)
             .call(xAxis);
 
         var y_axis = d3.select('#firstG').append("g")
-            .attr("class", "y axis")
             .attr("class", "axisWhite")
             .call(yAxis)
             .append('text')
-            .attr("y", 15)
+            .attr("y",(this.margin*0.6) )
+            .attr("x",(-20) )
             .attr("transform", "rotate(-90)")
             .attr("fill", "#000")
             .text("Total values");
@@ -407,6 +433,8 @@ class LinePlot {
             });
 
         this.svg.call(zoom);
+
+
 
     }
 

@@ -158,6 +158,10 @@ function checkInstancesButton() {
     if (d3.selectAll('#sankey_diagram')) {
         d3.selectAll('#sankey_diagram').remove();
     }
+    if (d3.selectAll('#bar_chart')) {
+        d3.selectAll('#bar_chart').remove();
+    }
+
     d3.select('#sankey_diagram_event').remove();
     var point = document.getElementById('point_svg');
     if (point)
@@ -181,6 +185,9 @@ whenDocumentLoaded(() => {
     const cdr = data[0];
     const gov_measures = data[1];
 
+    bar_chart = new BarPlot("Confirmed cases");
+	  bar_chart.draw();
+
     // Initialize first page as cases
     plot_object = new MapBubble(cdr);
     plot_object.draw();
@@ -199,11 +206,16 @@ whenDocumentLoaded(() => {
             plot_object = new MapBubble(cdr);
             change = false;
         }
+        bar_chart = new BarPlot("Confirmed cases");
+        bar_chart.draw();
+
         plot_object.class_name = "Confirmed cases";
         plot_object.draw();
 
         line_chart = new LinePlot("Confirmed cases");
         line_chart.draw();
+
+
 
         sankey_diagram = new Sankey();
         sankey_diagram.draw_all_sankeys();
@@ -213,6 +225,10 @@ whenDocumentLoaded(() => {
     const recovered_query = document.getElementById('recovered');
     recovered_query.addEventListener('click', () => {
         checkInstancesButton();
+
+        bar_chart = new BarPlot("Recovered");
+        bar_chart.draw();
+
         if (change) {
             plot_object = new MapBubble(cdr);
             change = false;
@@ -228,6 +244,9 @@ whenDocumentLoaded(() => {
     const deaths_query = document.getElementById('deaths');
     deaths_query.addEventListener('click', () => {
         checkInstancesButton();
+        bar_chart = new BarPlot("Deaths");
+        bar_chart.draw();
+
         if (change) {
             plot_object = new MapBubble(cdr);
             change = false;
