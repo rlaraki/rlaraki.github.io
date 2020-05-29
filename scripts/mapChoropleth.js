@@ -104,11 +104,11 @@ class MapChoropleth extends MapPlot {
                     if (this.style.stroke != 'red') {
                         list_countries.push(d.properties.name)
                         d3.select("#line_chart")
-                            .dispatch('click', {
+                            .dispatch('dblclick', {
                                 detail: d.properties.name
                             });
                         d3.select("#line_chart_testing")
-                            .dispatch('click', {
+                            .dispatch('dblclick', {
                                 detail: d.properties.name
                             });
                         d3.select(this).style('stroke', 'red')
@@ -120,11 +120,11 @@ class MapChoropleth extends MapPlot {
                             list_countries.splice(p, 1)
                         }
                         d3.select("#line_chart")
-                            .dispatch('click', {
+                            .dispatch('dblclick', {
                                 detail: d.properties.name
                             });
                         d3.select("#line_chart_testing")
-                            .dispatch('click', {
+                            .dispatch('dblclick', {
                                 detail: d.properties.name
                             });
                         d3.select(this).style('stroke', null);

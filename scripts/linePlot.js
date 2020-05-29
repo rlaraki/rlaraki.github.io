@@ -20,16 +20,25 @@ class LinePlot {
             .append('div')
             .attr('class', 'hidden tool');
 
-
-        this.svg = d3.select('div#right_scroll_plot')
-            .append('div')
-            .classed('svg_container_line_chart', true)
-            .append("svg")
-            .attr('id', "line_chart")
-            .classed('svg_line_chart', true)
-            .attr('preserveAspectRatio', 'xMinYMin meet')
-            .attr("viewBox", "0 0 " + (this.width + this.margin) + ' ' + (this.height + this.margin));
-
+        if (this.class_name == 'Testing') {
+            this.svg = d3.select('div#right_scroll_plot')
+                .append('div')
+                .classed('svg_container_line_chart', true)
+                .append("svg")
+                .attr('id', "line_chart_testing")
+                .classed('svg_line_chart_testing', true)
+                .attr('preserveAspectRatio', 'xMinYMin meet')
+                .attr("viewBox", "0 0 " + (this.width + this.margin) + ' ' + (this.height + this.margin));
+        } else {
+              this.svg = d3.select('div#right_scroll_plot')
+                  .append('div')
+                  .classed('svg_container_line_chart', true)
+                  .append("svg")
+                  .attr('id', "line_chart")
+                  .classed('svg_line_chart', true)
+                  .attr('preserveAspectRatio', 'xMinYMin meet')
+                  .attr("viewBox", "0 0 " + (this.width + this.margin) + ' ' + (this.height + this.margin));
+        }
 
     }
 
@@ -59,6 +68,7 @@ class LinePlot {
             var generalData = JSON.parse(request.responseText);
             list_countries.forEach((item) => {
                 data = data.concat(generalData[item])
+                console.log('testing data', data);
             });
         } else if (this.class_name == 'Measures') {
             var request = new XMLHttpRequest();
@@ -73,7 +83,7 @@ class LinePlot {
     }
 
     draw() {
-
+        console.log('draw');
         var data = this.concatData();
 
         var color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -115,44 +125,52 @@ class LinePlot {
         var parseDate1 = d3.timeParse("%Y-%m-%d");
 
         data.forEach(function(d) {
-            var country = d.name;
-            if (current.class_name == "Measures") {
-                console.log('parse data for measures');
-                d.values.forEach(d => {
-                    d.data = +d.cases;
-                    d.date = parseDate(d.date);
-
-                });
-
-                d.values1.forEach(d => {
-                    d.data = +d.cases;
-                    d.measures = d.measure;
-                    d.date = parseDate1(d.date);
-                    d.country = country;
-                });
-
-
-            } else {
-                d.values.forEach(d => {
-
-                    d.date = parseDate(d.date);
-                    d.country = country;
-
-                    if (current.class_name == "Confirmed cases") {
+            console.log('linePlot parse data', d );
+            if (d != undefined) {
+                var country = d.name;
+                if (current.class_name == "Measures") {
+                    d.values.forEach(d => {
                         d.data = +d.cases;
-                        d.type = 'Number of Cases';
-                    } else if (current.class_name == "Recovered") {
-                        d.data = +d.recovered;
-                        d.type = 'Number of Recovered';
-                    } else if (current.class_name == "Deaths") {
-                        d.data = +d.deaths;
-                        d.type = 'Number of Deaths';
-                    } else if (current.class_name == "Testing") {
-                        d.data = +d.tests;
-                        d.type = 'Number of Tests';
-                    }
-                });
+                        d.date = parseDate(d.date);
+
+                    });
+
+                    d.values1.forEach(d => {
+                        d.data = +d.cases;
+                        d.measures = d.measure;
+                        d.date = parseDate1(d.date);
+                        d.country = country;
+                    });
+
+
+                } else {
+                    d.values.forEach(d => {
+
+                        d.date = parseDate(d.date);
+                        d.country = country;
+
+                        if (current.class_name == "Confirmed cases") {
+                            d.data = +d.cases;
+                            d.type = 'Number of Cases';
+                        } else if (current.class_name == "Recovered") {
+                            d.data = +d.recovered;
+                            d.type = 'Number of Recovered';
+                        } else if (current.class_name == "Deaths") {
+                            d.data = +d.deaths;
+                            d.type = 'Number of Deaths';
+                        } else if (current.class_name == "Testing") {
+                            d.data = +d.tests;
+                            d.type = 'Number of Tests';
+                        }
+                    });
+                }
+            } else {
+              console.log('1', data);
+              var index_undefined = data.indexOf(d);
+              data.splice(index_undefined, 1);
+              console.log('2', data);
             }
+
         });
         return data;
     }
@@ -300,7 +318,6 @@ class LinePlot {
         var circles;
         if (this.class_name == 'Measures') {
             /* Add circles in the line */
-            console.log('cirles measures data', data);
             circles = lines.selectAll("circle-group")
                 .data(data).enter()
                 .append("g")
