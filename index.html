@@ -1,59 +1,61 @@
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>Interactive Coronavirus Map</title>
-		<style type="text/css">
-			/* No style rules here yet */
-			.node rect {
-			  cursor: move;
-			  fill-opacity: .9;
-			  shape-rendering: crispEdges;
-			}
 
-			.node text {
-			  pointer-events: none;
-			  text-shadow: 0 1px 0 #fff;
-			}
+<head>
+	<meta charset="utf-8">
+	<title>Interactive Coronavirus Map</title>
+	<style type="text/css">
+		/* No style rules here yet */
+		.node rect {
+			cursor: move;
+			fill-opacity: .9;
+			shape-rendering: crispEdges;
+		}
 
-			.link {
-			  fill: none;
-			  stroke: #ccc;
-			  stroke-opacity: 1;
-			}
+		.node text {
+			pointer-events: none;
+			text-shadow: 0 1px 0 #fff;
+		}
 
-			.link:hover {
-			  stroke-opacity: .5;
-			}
+		.link {
+			fill: none;
+			stroke: #ccc;
+			stroke-opacity: 1;
+		}
 
-			svg {
-				font-family: Sans-Serif, Arial;
-			}
+		.link:hover {
+			stroke-opacity: .5;
+		}
 
-			.line {
-			  stroke-width: 2;
-			  fill: none;
-			}
+		svg {
+			font-family: Sans-Serif, Arial;
+		}
 
-			.axis path {
-			  stroke: black;
-			}
+		.line {
+			stroke-width: 2;
+			fill: none;
+		}
 
-			.text {
-			  font-size: 12px;
-				color : #ccc;
-			}
+		.axis path {
+			stroke: black;
+		}
 
-			.title-text {
-			  font-size: 12px;
-			}
-		</style>
-		<link rel="stylesheet" type="text/css" href="style.css">
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-selection/1.2.0/d3-selection.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"
-				type="text/javascript"/></script>
-	</head>
-	<body class='body'>
+		.text {
+			font-size: 12px;
+			color: #ccc;
+		}
+
+		.title-text {
+			font-size: 12px;
+		}
+	</style>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-selection/1.2.0/d3-selection.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js" type="text/javascript" />
+	</script>
+</head>
+
+<body class='body'>
 	<div class='main_container'>
 		<div class='title_container'>
 			<h3 style="color:#ccc;">
@@ -63,30 +65,29 @@
 		<div class='data_container'>
 			<div class='map_container'>
 				<div class="btn-group btn-group-toggle" data-toggle="buttons">
-			  <label class="btn btn-secondary active">
-			    <input type="radio" name="options" id="cases" autocomplete="off" checked> Cases
-			  </label>
-			  <label class="btn btn-secondary">
-			    <input type="radio" name="options" id="deaths" autocomplete="off"> Deaths
-			  </label>
-			  <label class="btn btn-secondary">
-			    <input type="radio" name="options" id="recovered" autocomplete="off"> Recovered
-			  </label>
-				<label class="btn btn-secondary">
-			    <input type="radio" name="options" id="measures" autocomplete="off"> Measures
-			  </label>
-			</div>
+					<label class="btn btn-secondary active">
+						<input type="radio" name="options" id="cases" autocomplete="off" checked> Cases
+					</label>
+					<label class="btn btn-secondary">
+						<input type="radio" name="options" id="deaths" autocomplete="off"> Deaths
+					</label>
+					<label class="btn btn-secondary">
+						<input type="radio" name="options" id="recovered" autocomplete="off"> Recovered
+					</label>
+					<label class="btn btn-secondary">
+						<input type="radio" name="options" id="measures" autocomplete="off"> Measures
+					</label>
+				</div>
 
 				<div id="slider">
-					<label for= "slider_id"
-								 style="display: inline-block; text-align: right; color : #ccc">
-								 <span id="date-value"></span>
+					<label for="slider_id" style="display: inline-block; text-align: right; color : #ccc">
+						<span id="date-value"></span>
 					</label>
 				</div>
 				<div class='scaling-svg-container' id='map_container_svg'>
 				</div>
 				<style>
-				.point {
+					.point {
 						fill: rgb(255, 141, 82);
 						opacity: 0.05;
 					}
@@ -94,23 +95,24 @@
 			</div>
 			<div class='right_scroll_plot' id='right_scroll_plot'>
 			</div>
-	</div>
-	<script src="https://d3js.org/d3.v5.min.js"></script>
-	<script src='lib/d3.min.js'></script>
-	<script src="https://d3js.org/d3-time.v1.min.js"></script>
-	<script src="https://d3js.org/d3-time-format.v2.min.js"></script>
-	<script src='lib/topojson.min.js'></script>
-	<script src='scripts/linePlot.js'></script>
-	<script src='scripts/barPlot.js'></script>
-	<script src='main.js'></script>
-	<script src='scripts/mapChoropleth.js'></script>
-	<script src = 'scripts/measures_plot.js'></script>
-	<script src='scripts/mapBubble.js'></script>
-	<script src='scripts/mapMeasures.js'></script>
-	<script src='scripts/sankey.js'></script>
-	<script src='scripts/age_sexe_sankey.js'></script>
-	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-	</body>
+		</div>
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+		<script src='lib/d3.min.js'></script>
+		<script src="https://d3js.org/d3-time.v1.min.js"></script>
+		<script src="https://d3js.org/d3-time-format.v2.min.js"></script>
+		<script src='lib/topojson.min.js'></script>
+		<script src='scripts/linePlot.js'></script>
+		<script src='scripts/barPlot.js'></script>
+		<script src='main.js'></script>
+		<script src='scripts/mapChoropleth.js'></script>
+		<script src='scripts/measures_plot.js'></script>
+		<script src='scripts/mapBubble.js'></script>
+		<script src='scripts/mapMeasures.js'></script>
+		<script src='scripts/sankey.js'></script>
+		<script src='scripts/age_sexe_sankey.js'></script>
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+</body>
+
 </html>
