@@ -251,10 +251,10 @@ class MapChoropleth extends MapPlot {
           if (d.properties.date[date] != undefined) {
             return current_class.color_scale(d.properties.date[date]);
           } else {
-            return "red";
+            return "#ccc";
           }
         } else {
-          return "#4c0000";
+          return "#ccc";
         }
       })
       .style('stroke', function(d) {

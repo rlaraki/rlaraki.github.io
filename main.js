@@ -194,8 +194,39 @@ function whenDocumentLoaded(action) {
   }
 }
 
+function checkReady() {
+  var svg = document.getElementById("svg g");
+  if (svg == null) {
+      setTimeout("checkReady()", 5);
+  } else {
+    document.querySelector(
+      "#loader").style.display = "none";
+    document.querySelector(
+      "body").style.visibility = "visible";
+
+  }
+}
 
 whenDocumentLoaded(() => {
+
+  document.querySelector(
+    "body").style.visibility = "hidden";
+  document.querySelector(
+    "#loader").style.visibility = "visible";
+
+/*  document.onreadystatechange = function() {
+            if (document.readyState === "complete") {
+                document.querySelector(
+                  "body").style.visibility = "hidden";
+                document.querySelector(
+                  "#loader").style.visibility = "visible";
+            } else {
+                document.querySelector(
+                  "#loader").style.display = "none";
+                document.querySelector(
+                  "body").style.visibility = "visible";
+            }
+        };*/
 
   const data = getData();
   const cdr = data[0];
@@ -204,9 +235,12 @@ whenDocumentLoaded(() => {
   bar_chart = new BarPlot("Confirmed cases");
   bar_chart.draw();
 
+
   // Initialize first page as cases
   plot_object = new MapBubble(cdr);
   plot_object.draw();
+
+
   var change = false;
 
   line_chart = new LinePlot("Confirmed cases");
@@ -280,13 +314,23 @@ whenDocumentLoaded(() => {
 
     plot_object.draw();
     top_measures.draw();
-    line_tests = new LinePlot("Testing");
-    line_tests.draw();
     line_chart = new LinePlot("Measures");
     line_chart.draw();
+    line_tests = new LinePlot("Testing");
+    line_tests.draw();
+
 
     change = true;
   });
+
+
+
+  /*const a = d3.select('.scaling-svg')
+  a.addEventListener('load', ()=> {
+  console.log("here1");*/
+
+
+  checkReady()
 
 
   window.onresize = function() {
