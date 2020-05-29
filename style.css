@@ -238,7 +238,7 @@ div.tool {
 	display: inline-block;
   position: relative;
   width: 100%;
-  padding-bottom: 80%; /* aspect ratio */
+  padding-bottom: 60%; /* aspect ratio */
   vertical-align: top;
   overflow: hidden;
 }
@@ -249,6 +249,7 @@ div.tool {
   top: 0;
   left: 0;
 }
+
 .svg_cont_barplot {
 	display: inline-block;
   position: relative;
