@@ -120,9 +120,10 @@ class BarPlot {
 
 
     this.svg.append("g")
+      .attr("transform", `translate(0, ${height - margin})`)
       .call(xAxis)
       .selectAll('text')
-      .attr('transform', 'translate(0,15)rotate(-45)');
+      .attr('transform', 'translate(0,16)rotate(30)');
 
     this.svg.append("g")
       .call(yAxis);
