@@ -19,8 +19,8 @@ var layout = {
   xaxis: {
     autorange: true,
     range: ['2020-02-01', '2020-05-16'],
-    rangeselector: {buttons: [
-        {
+    rangeselector: {
+      buttons: [{
           count: 1,
           label: '1m',
           step: 'month',
@@ -32,9 +32,14 @@ var layout = {
           step: 'week',
           stepmode: 'backward'
         },
-        {step: 'all'}
-      ]},
-    rangeslider: {range: ['2020-02-01', '2020-05-16']},
+        {
+          step: 'all'
+        }
+      ]
+    },
+    rangeslider: {
+      range: ['2020-02-01', '2020-05-16']
+    },
     type: 'date'
   },
   yaxis: {
@@ -43,4 +48,6 @@ var layout = {
   }
 };
 
-Plotly.newPlot(right_scroll_plot, data, layout, {scrollZoom: true});
+Plotly.newPlot(right_scroll_plot, data, layout, {
+  scrollZoom: true
+});
