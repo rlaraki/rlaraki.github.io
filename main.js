@@ -194,6 +194,18 @@ function whenDocumentLoaded(action) {
     }
 }
 
+function checkReady() {
+  var svg = document.getElementById("svg g");
+  if (svg == null) {
+      setTimeout("checkReady()", 5);
+  } else {
+    document.querySelector(
+      "#loader").style.display = "none";
+    document.querySelector(
+      "body").style.visibility = "visible";
+
+  }
+}
 
 whenDocumentLoaded(() => {
 
@@ -290,7 +302,7 @@ whenDocumentLoaded(() => {
         change = true;
     });
 
-
+    checkReady()
 
     window.onresize = function() {
         plot_object.draw(plot_object.date_ind);
